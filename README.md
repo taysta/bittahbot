@@ -9,7 +9,7 @@ Bittah uses Python 3.9 and MongoDB.
 Quickstart, assuming all necessary tools are installed:
 
 1. `docker compose up -d` to start up Mongo
-2. `pipenv install` to install Python dependencies
+2. `pipenv sync` to install Python dependencies
 3. Make a copy of `.env.example` called `.env` in the root directory and fill out all values
 4. `pipenv run python main.py` to run the bot
 
