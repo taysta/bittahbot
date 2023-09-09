@@ -17,7 +17,7 @@ async def add(ctx, bot, queue: Queue):
         return
 
     if add_result.should_start():
-        if queue in (Queue.QUICKPLAY, Queue.TEST, Queue.NEWBLOODS):
+        if queue in (Queue.QUICKPLAY):
             await msg.generating_teams(ctx, bot)
             game = game_service.start_game(user, queue)
 

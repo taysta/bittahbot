@@ -69,11 +69,7 @@ map_imgs = {
 
 def queues(default: bool):
     if default is True:
-        return [{"name": "Quickplay", "value": "quickplay"},
-                {"name": "Newbloods", "value": "newbloods"},
-                {"name": "Test", "value": "test"}]
+        return [{"name": "Quickplay", "value": "quickplay"}]
 
     return [{"name": "All Queues", "value": "all"},
-            {"name": "Quickplay", "value": "quickplay"},
-            {"name": "Newbloods", "value": "newbloods"},
-            {"name": "Test", "value": "test"}]
+            {"name": "Quickplay", "value": "quickplay"},]

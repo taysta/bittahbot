@@ -47,7 +47,7 @@ def check_if_in_queue(user, queue: Queue):
 
 
 def get_all_queue_counts() -> Dict[str, int]:
-    queues = ["quickplay", "newbloods", "test"]
+    queues = ["quickplay"]
     return {queue: mongo.db['Queue'].count_documents({"queue": queue}) for queue in queues}
 
 

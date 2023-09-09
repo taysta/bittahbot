@@ -56,7 +56,7 @@ class CommandContextMenus(commands.Cog):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
-        queues = [QueueEnum.QUICKPLAY.value, QueueEnum.NEWBLOODS.value, QueueEnum.TEST.value]
+        queues = [QueueEnum.QUICKPLAY.value]
         embed = discord.Embed(color=msg.success_color)
         for q in queues:
             is_live = queue_schema.queue_is_ingame(q)

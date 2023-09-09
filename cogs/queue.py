@@ -42,12 +42,13 @@ class Queue(commands.Cog):
         '''
         if not await general.correct_channel(ctx, user):
             return
+        """
         if queue == "newbloods":
             # check if user has newbloods role
             role = discord.utils.get(ctx.guild.roles, name="newblood")
             if role not in user.roles:
                 return await ctx.send("You are not a newblood.", hidden=True)
-
+        """
         queue_enum = QueueEnum(queue)
         await add(ctx, self.bot, queue_enum)
 
@@ -85,7 +86,7 @@ class Queue(commands.Cog):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
-        queues = [QueueEnum.QUICKPLAY.value, QueueEnum.NEWBLOODS.value, QueueEnum.TEST.value]
+        queues = [QueueEnum.QUICKPLAY.value]
         embed = discord.Embed(color=msg.success_color)
         for q in queues:
             is_live = queue_schema.queue_is_ingame(q)
