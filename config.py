@@ -32,12 +32,12 @@ variables = {
     "admin_channel": getenv("BITTAH_DISCORD_ADMIN_CHANNEL_ID"),
     "twitch_client_id": getenv("TWITCH_CLIENT_ID"),
     "twitch_client_secret": getenv("TWITCH_CLIENT_SECRET"),
-    "twitch_game_id": getenv("TWITCH_GAME_ID","517069"),
+    "twitch_game_id": getenv("TWITCH_GAME_ID",517069),
     "bittah_access_role": getenv("BITTAH_ACCESS_ROLE_ID"),
     "bittah_admin_role": getenv("BITTAH_ADMIN_ROLE_ID"),
     "bittah_sa_role": getenv("BITTAH_SUPERADMIN_ROLE_ID"),
-    "auto_remove": getenv("QUEUE_EXPIRE_MINUTES", "90"),
-    "setup_timeout_minutes": getenv("PROFILE_SETUP_TIMEOUT_MINUTES", "2"),
+    "auto_remove": getenv("QUEUE_EXPIRE_MINUTES", 90),
+    "setup_timeout_minutes": getenv("PROFILE_SETUP_TIMEOUT_MINUTES", 2),
     "avail": ":green_square:",
     "taken": ":red_square:",
     "live": ":green_circle:",
@@ -46,7 +46,7 @@ variables = {
     "silver": ":second_place:",
     "bronze": ":third_place:",
     "b_medal": ":medal:",
-    "rank": ":arrow_up:",
+    "rank": ":heavy_minus_sign:",
     "rank_red": ":arrow_down:"
 }
 
