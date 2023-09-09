@@ -290,28 +290,9 @@ def pick_suggested_server(players):
         if player_region != "Not Set":
             regions.append(player_region)
 
-    na_servers = ["Chicago PUG", "Los Angeles PUG"]
-    eu_servers = ["London PUG"]
-    aus_servers = ["Sydney PUG"]
+    aus_servers = ["Sydney Optimised PUG"]
 
-    if not regions:
-        return random.choice(na_servers)
-
-    def popular(lst):
-        return max(set(lst), key=lst.count)
-
-    most_popular = popular(regions)
-
-    if most_popular == "EU":
-        return random.choice(eu_servers)
-    elif most_popular == "AU":
-        return random.choice(aus_servers)
-
-    # Cheesy hack to pick Chicago in EU-friendly times and SLC in AU-friendly times
-    now = datetime.now()
-    if now.hour <= 3:
-        return na_servers[0]
-    return na_servers[1]
+    return random.choice(aus_servers)
 
 
 def update_game_server(game_id, server):
