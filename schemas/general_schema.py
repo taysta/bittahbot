@@ -2,7 +2,7 @@ from includes import mongo
 import datetime
 
 def check_setup_exists(user):
-    if mongo.db['Messages'].find({"userId":user.id}).count() < 1:
+    if mongo.db['Messages'].count_documents({"userId":user.id}) < 1:
         return False
     return True
 
