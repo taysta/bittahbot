@@ -1,10 +1,10 @@
-# Chilla
+# Bittah
 
-More useful info tbd here.
+Forked from @lawrencehlee's Chilla bot.
 
 ## Setup
 
-Chilla uses Python 3.9 and MongoDB.
+Bittah uses Python 3.9 and MongoDB.
 
 Quickstart, assuming all necessary tools are installed:
 
@@ -15,7 +15,7 @@ Quickstart, assuming all necessary tools are installed:
 
 ### MongoDB
 
-By default, Chilla looks for a MongoDB instance at localhost:27017 with no authentication. You can override the Mongo
+By default, Bittah looks for a MongoDB instance at localhost:27017 with no authentication. You can override the Mongo
 via environment variables (see "Configuration" below).
 
 This project includes a very basic docker-compose.yml file to spin up a Mongo container if you don't want to download
@@ -34,7 +34,7 @@ virtualenv.
 
 ### Configuration
 
-Chilla uses environment variables for configuration in combination with `.env` files and python-dotenv. `.env` is
+Bittah uses environment variables for configuration in combination with `.env` files and python-dotenv. `.env` is
 excluded from source control, and the template for all variables can be found in `.env.example`.
 
 ### Testing
@@ -60,9 +60,9 @@ To get real data from prod into your local db for manual testing:
 
 ```
 # Open a shell into the mongo container
-docker exec -it chilla_mongo_1 bash
+docker exec -it bittah_mongo_1 bash
 # Dump prod data - fill in with your creds
-mongodump mongodb+srv://<username>:<password>@<url>/Chilla
+mongodump mongodb+srv://<username>:<password>@<url>/Bittah
 # Restore
 mongorestore dump
 ```

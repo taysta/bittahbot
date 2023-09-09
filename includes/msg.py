@@ -282,18 +282,15 @@ async def help_text(ctx):
     
     **Meta**
     `/profile`: See a player's profile
-    `/position`: Set your profile position
-    `/bio`: Set your profile bio. Leaving it empty will remove it
-    `/showstats`: Hide or show your profile stats
-    `/leaderboard`: See the player leaderboard
+    `/setup`: Set your profile position
     `/version`: See the bot version
-    `/help`: You're looking at it
+    `/help`: View the help menu
     
     **Admin-only**
-    `/banplayer`: Ban a player because they're much better than you
-    `/revokeban`: Realize that a player you previously banned isn't actually that much better than you
-    `/purge`: Clear bot messages, allow all crime for 8 hours
-    `/shutdown`: Murder the bot in cold blood, you monster
+    `/banplayer`: Ban a player
+    `/revokeban`: Unban a player
+    `/purge`: Clear bot messages for 8 hours
+    `/shutdown`: Shut the bot down
     """
     embed = discord.Embed(description=body, color=accent_color)
     await ctx.send(embed=embed, hidden=True)
@@ -524,8 +521,8 @@ async def show_leaderboard(ctx, leaderboard: Leaderboard):
     embed.add_field(name=f"{emojis.person_doing_cartwheel} Unique Players**",
                     value=bold_mono(leaderboard.unique_players))
     embed.set_footer(text="""* Excludes players with fewer than 5 total games in the time period.
-** Excludes games and players prior to the "modern" Chilla era, i.e. when W/L/T tracking began.""")
-    await ctx.send(embed=embed)
+** Excludes significant historical data, prior to W/L/T tracking (September 2023).""")
+    await ctx.send(embed=embed, hidden=True)
 
 
 async def invalid_date(ctx):

@@ -26,12 +26,12 @@ class Admin(commands.Cog):
         description="Adds admin: only super admins can do this",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, False),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False),
-                # Chilla SA - True
-                create_permission(config.variables['chilla_sa_role'], SlashCommandPermissionType.ROLE, True)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, False),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False),
+                # Bittah SA - True
+                create_permission(config.variables['bittah_sa_role'], SlashCommandPermissionType.ROLE, True)
             ]
         },
         options=[
@@ -54,23 +54,23 @@ class Admin(commands.Cog):
             member_schema.add_admin(member)
 
             try:
-                role = discord.utils.get(member.guild.roles, name="Chilla Admin")
+                role = discord.utils.get(member.guild.roles, name="Bittah Admin")
                 await member.add_roles(role)
             except Exception as e:
                 print(e)
-            await msg.success(ctx, f"**{member.name}** is now an **admin**")
+            await msg.success(ctx, f"**{member.name}** is now an **admin**", hidden=True)
 
     @cog_ext.cog_slash(
         name="removeadmin",
         description="Removes admin: only super admins can do this",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, False),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False),
-                # Chilla SA - True
-                create_permission(config.variables['chilla_sa_role'], SlashCommandPermissionType.ROLE, True)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, False),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False),
+                # Bittah SA - True
+                create_permission(config.variables['bittah_sa_role'], SlashCommandPermissionType.ROLE, True)
             ]
         },
         options=[
@@ -89,7 +89,7 @@ class Admin(commands.Cog):
         if member_schema.already_admin(member):
             member_schema.remove_admin(member)
             try:
-                role = discord.utils.get(member.guild.roles, name="Chilla Admin")
+                role = discord.utils.get(member.guild.roles, name="Bittah Admin")
                 await member.remove_roles(role)
             except Exception as e:
                 print(e)
@@ -102,10 +102,10 @@ class Admin(commands.Cog):
         description="Warn a player",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
             ]
         },
         options=[
@@ -153,7 +153,7 @@ class Admin(commands.Cog):
             """
             embed = discord.Embed(title="Banned", description=body, color=msg.error_color)
             embed.set_author(name=member.name, icon_url=member.avatar_url)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, hidden=True)
         else:
             # warn player
             member_schema.warn_player(ctx.author, member)
@@ -176,17 +176,17 @@ class Admin(commands.Cog):
             """
             embed = discord.Embed(title="Warning", description=body, color=0xffb300)
             embed.set_author(name=member.name, icon_url=member.avatar_url)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, hidden=True)
 
     @cog_ext.cog_slash(
         name="banplayer",
         description="Bans player: only admins can do this",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
             ]
         },
         options=[
@@ -232,17 +232,17 @@ class Admin(commands.Cog):
             """
             embed = discord.Embed(title="Banned", description=body, color=msg.error_color)
             embed.set_author(name=member.name, icon_url=member.avatar_url)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, hidden=True)
 
     @cog_ext.cog_slash(
         name="revokeban",
         description="Unbans player: only admins can do this",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
             ]
         },
         options=[
@@ -279,7 +279,7 @@ class Admin(commands.Cog):
             """
             embed = discord.Embed(title="Ban Revoked", description=body, color=msg.success_color)
             embed.set_author(name=member.name, icon_url=member.avatar_url)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, hidden=True)
         else:
             await ctx.send(f"**{member.name}** is not banned", hidden=True)
 
@@ -288,10 +288,10 @@ class Admin(commands.Cog):
         description="Cancel game",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
             ]
         },
         options=[
@@ -321,10 +321,10 @@ class Admin(commands.Cog):
         description="Shuts down the bot (Admin only)",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
             ]
         },
         guild_ids=config.variables['guild_ids']
@@ -334,17 +334,17 @@ class Admin(commands.Cog):
         if await general.correct_channel(ctx, user) == False:
             return
         embed = discord.Embed(description="Okay, **goodnight!** :heartpulse:")
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, hidden=True)
 
     @cog_ext.cog_slash(
         name="remove",
         description="Remove player from queue",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
             ]
         },
         options=[
@@ -383,10 +383,10 @@ class Admin(commands.Cog):
         description="Removes user warnings",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
             ]
         },
         options=[
@@ -446,17 +446,17 @@ class Admin(commands.Cog):
         embed = discord.Embed(title="Removed Warning(s)", description=body, color=msg.success_color)
         embed.set_author(name=member.name, icon_url=member.avatar_url)
 
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, hidden=True)
 
     @cog_ext.cog_slash(
         name="moderation",
         description="Shows banned players and warnings",
         permissions={
             config.variables['main_guild_id']: [
-                # Chilla Admin - True
-                create_permission(config.variables['chilla_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Chilling - False
-                create_permission(config.variables['chillin_role'], SlashCommandPermissionType.ROLE, False)
+                # Bittah Admin - True
+                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
+                # Bittah Access - False
+                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
             ]
         },
         options = [
@@ -486,24 +486,24 @@ class Admin(commands.Cog):
             banned_list = member_schema.get_all_banned()
             if banned_list.count() < 1:
                 embed = discord.Embed(title="Banned", description="No one is **banned**.", color=msg.success_color)
-                await ctx.send(embed=embed)
+                await ctx.send(embed=embed, hidden=True)
             else:
                 body = ""
                 for player in banned_list:
                     body = body + f"**Player Name**: **`{player['username']}`**\n**Player ID**: **`{player['userId']}`**\n**By**: **`{player['by']}`**\n\n"
                 embed = discord.Embed(title="Banned", description=body, color=msg.error_color)
-                await ctx.send(embed=embed)
+                await ctx.send(embed=embed, hidden=True)
         else:
             warning_list = member_schema.get_all_warned()
             if warning_list.count() < 1:
                 embed = discord.Embed(title="Warned", description="No one has been **warned**.", color=msg.success_color)
-                await ctx.send(embed=embed)
+                await ctx.send(embed=embed, hidden=True)
             else:
                 body = ""
                 for player in warning_list:
                     body = body + f"**Player Name**: **`{player['username']}`**\n**Player ID**: **`{player['userId']}`**\n**By**: **`{player['by']}`**\n\n"
                 embed = discord.Embed(title="Warned", description=body, color=msg.error_color)
-                await ctx.send(embed=embed)
+                await ctx.send(embed=embed, hidden=True)
 
 
 def setup(bot):

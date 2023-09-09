@@ -52,7 +52,7 @@ class Profile(commands.Cog):
             embed.set_author(icon_url=user.avatar_url, name=user.name)
             embed.set_thumbnail(url=user.avatar_url)
             if member_schema.already_admin(user):
-                embed.add_field(name="Role", value="**`Chilla Admin`**")
+                embed.add_field(name="Role", value="**`Bittah Admin`**")
             else:
                 embed.add_field(name="Role", value="**`Gamer`**")
             embed.add_field(name="Total Games*", value=f"{config.variables['rank']} **`{profile['gamesPlayed']}`**",
@@ -83,7 +83,7 @@ class Profile(commands.Cog):
             embed.set_author(icon_url=member.avatar_url, name=member.name)
             embed.set_thumbnail(url=member.avatar_url)
             if member_schema.already_admin(member):
-                embed.add_field(name="Role", value="**`Chilla Admin`**")
+                embed.add_field(name="Role", value="**`Bittah Admin`**")
             else:
                 embed.add_field(name="Role", value="**`Gamer`**")
             embed.add_field(name="Total Games*", value=f"{config.variables['rank']} **`{profile['gamesPlayed']}`**",
@@ -102,7 +102,7 @@ class Profile(commands.Cog):
                 embed.add_field(name="W/L/T*", value=f"**`Hidden`**")
 
         embed.set_footer(
-            text="* Total Games includes significant historical data from EGGBOT days, whereas W/L/T tracking only started in July 2021.")
+            text="* Total Games includes significant historical data, prior to W/L/T tracking (September 2023).")
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
@@ -119,7 +119,7 @@ class Profile(commands.Cog):
         general_schema.add_profile_setup(ctx.author, str(unique_id), 1)
         await msg.profile_setup(ctx.author, unique_id)
         embed = discord.Embed(description="Setup has been sent. **Check your DM's**", color=msg.success_color)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, hidden=True)
 
 
 def setup(bot):

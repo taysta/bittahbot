@@ -87,7 +87,7 @@ class CommandContextMenus(commands.Cog):
             print(e)
         general_schema.add_profile_setup(ctx.author, str(unique_id), 1)
         embed = discord.Embed(description="Setup has been sent. **Check your DM's**", color=msg.success_color)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, hidden=True)
 
 
 def setup(cog):

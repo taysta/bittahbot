@@ -63,7 +63,7 @@ class Misc(commands.Cog):
         if not await correct_channel(ctx, ctx.author):
             return
 
-        embed = discord.Embed(description=f"Chilla Version: **`{config.variables['version']}`**")
+        embed = discord.Embed(description=f"Bittah Version: **`{config.variables['version']}`**")
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
