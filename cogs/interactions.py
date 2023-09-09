@@ -23,12 +23,15 @@ class Interaction(commands.Cog):
         interaction_id = ctx.custom_id
 
         if interaction_id == custom_ids.shuffle_teams:
-            if not ingame_schema.is_ingame(interacted_by):
-                await msg.not_ingame(ctx)
-                return
-            if not game_service.is_captain(interacted_by):
-                await msg.captains_only(ctx)
-                return
+            # check if user has admin role
+            role = discord.utils.get(ctx.guild.roles, config.variables['bittah_admin_role'])
+            if role not in user.roles:
+                if not ingame_schema.is_ingame(interacted_by):
+                    await msg.not_ingame(ctx)
+                    return
+                if not game_service.is_captain(interacted_by):
+                    await msg.captains_only(ctx)
+                    return
 
             game_id = ingame_schema.get_game_id_from_user(interacted_by)
             game = game_service.get(game_id)
