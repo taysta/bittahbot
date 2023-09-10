@@ -34,21 +34,8 @@ class Queue(commands.Cog):
     )
     async def _add(self, ctx: SlashContext, queue: str):
         user = ctx.author
-        '''
-            Even though this isn't the best solution, it's the only
-            thing I can do to check if the user has the newblood role before
-            adding to newbloods queue as you can't add permissions to specific choices.
-            You can only add permissions to the whole command
-        '''
         if not await general.correct_channel(ctx, user):
             return
-        """
-        if queue == "newbloods":
-            # check if user has newbloods role
-            role = discord.utils.get(ctx.guild.roles, name="newblood")
-            if role not in user.roles:
-                return await ctx.send("You are not a newblood.", hidden=True)
-        """
         queue_enum = QueueEnum(queue)
         await add(ctx, self.bot, queue_enum)
 

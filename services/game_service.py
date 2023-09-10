@@ -304,7 +304,7 @@ def pick_suggested_server(players):
 
     if most_popular == "EU":
         return random.choice(eu_servers)
-    elif most_popular == "AU":
+    elif most_popular == "NA":
         return random.choice(na_servers)
 
 

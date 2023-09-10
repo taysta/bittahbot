@@ -76,4 +76,4 @@ def queues(default: bool):
         return [{"name": "Quickplay", "value": "quickplay"}]
 
     return [{"name": "All Queues", "value": "all"},
-            {"name": "Quickplay", "value": "quickplay"}, ]
+            {"name": "Quickplay", "value": "quickplay"}]

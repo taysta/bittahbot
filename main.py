@@ -39,8 +39,7 @@ async def autoremove():
 async def autoremove_expired_messages():
     messages = general_schema.get_all_setup_messages()
     for message in messages:
-        if message['created'] < datetime.datetime.now() - datetime.timedelta(
-                minutes=config.variables['expire_message']):
+        if message['created'] < datetime.datetime.now() - datetime.timedelta(minutes=config.variables['expire_message']):
             embed = discord.Embed(description="Profile setup has expired. Use **`/setup`** again to restart")
             user = await client.fetch_user(message['userId'])
             await user.send(embed=embed)

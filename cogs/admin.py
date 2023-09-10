@@ -47,7 +47,7 @@ class Admin(commands.Cog):
             member_schema.add_admin(member)
 
             try:
-                role = discord.utils.get(member.guild.roles, name="Bittah Admin")
+                role = discord.utils.get(member.guild.roles, id=config.variables['bittah_admin_role'])
                 await member.add_roles(role)
             except Exception as e:
                 print(e)
@@ -75,7 +75,7 @@ class Admin(commands.Cog):
         if member_schema.already_admin(member):
             member_schema.remove_admin(member)
             try:
-                role = discord.utils.get(member.guild.roles, name="Bittah Admin")
+                role = discord.utils.get(member.guild.roles, id=config.variables['bittah_admin_role'])
                 await member.remove_roles(role)
             except Exception as e:
                 print(e)

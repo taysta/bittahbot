@@ -137,7 +137,6 @@ def calculate_tolerance(match):
 
 
 def is_balanced_match(tolerance, rating_tolerance):
-    print("Tolerance of match: %d", tolerance)
     return tolerance <= rating_tolerance
 
 
