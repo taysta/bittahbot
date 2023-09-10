@@ -229,7 +229,7 @@ async def not_ingame(ctx):
 
 
 async def lacks_permission(ctx):
-    await ctx.sent("You lack the permissions required to execute this command", hidden=True)
+    await ctx.send("You lack the permissions required to execute this command", hidden=True)
 
 
 async def other_not_ingame(ctx, name):
