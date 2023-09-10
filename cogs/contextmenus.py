@@ -11,6 +11,7 @@ from cogs.shared.add import add
 from includes import msg, general
 from models.queue_models import Queue as QueueEnum
 from schemas import queue_schema, general_schema, member_schema
+import admin
 
 
 class CommandContextMenus(commands.Cog):
@@ -29,6 +30,9 @@ class CommandContextMenus(commands.Cog):
     async def _add_quickplay(self, ctx: MenuContext):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
+            return
+        if admin.check_admin(ctx) < 1:
+            await msg.lacks_permission(ctx)
             return
 
         queue_enum = QueueEnum("quickplay")
@@ -76,7 +80,7 @@ class CommandContextMenus(commands.Cog):
         guild_ids=config.variables['guild_ids']
     )
     async def _profile_setup(self, ctx: MenuContext):
-        if await general.correct_channel(ctx, ctx.author) == False:
+        if not await general.correct_channel(ctx, ctx.author):
             return
         if general_schema.check_setup_exists(ctx.author):
             return await ctx.send("Setup already in progress. Check your DM's", hidden=True)

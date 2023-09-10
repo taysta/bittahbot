@@ -228,6 +228,10 @@ async def not_ingame(ctx):
     await ctx.send("You're not **in game**.", hidden=True)
 
 
+async def lacks_permission(ctx):
+    await ctx.sent("You lack the permissions required to execute this command", hidden=True)
+
+
 async def other_not_ingame(ctx, name):
     await ctx.send(f"**{name}** isn't ingame.", hidden=True)
 

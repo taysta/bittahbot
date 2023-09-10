@@ -46,7 +46,10 @@ class Admin(commands.Cog):
     )
     async def _newadmin(self, ctx: SlashContext, member: discord.Member):
         user = ctx.author
-        if await general.admin_channel(ctx, user) == False:
+        if not await general.admin_channel(ctx, user):
+            return
+        if check_admin(ctx) < 3:
+            await msg.lacks_permission(ctx)
             return
         if member_schema.already_admin(member):
             await ctx.send(f"**{member.name}** is already an admin.", hidden=True)
@@ -84,7 +87,10 @@ class Admin(commands.Cog):
         guild_ids=config.variables['guild_ids']
     )
     async def _removeadmin(self, ctx: SlashContext, member: discord.Member):
-        if await general.admin_channel(ctx, ctx.author) == False:
+        if not await general.admin_channel(ctx, ctx.author):
+            return
+        if check_admin(ctx) < 3:
+            await msg.lacks_permission(ctx)
             return
         if member_schema.already_admin(member):
             member_schema.remove_admin(member)
@@ -125,7 +131,10 @@ class Admin(commands.Cog):
         guild_ids=config.variables['guild_ids']
     )
     async def _warn(self, ctx: SlashContext, member: discord.Member, message: str):
-        if await general.admin_channel(ctx, ctx.author) == False:
+        if not await general.admin_channel(ctx, ctx.author):
+            return
+        if check_admin(ctx) < 2:
+            await msg.lacks_permission(ctx)
             return
         # get warnings
         warnings = member_schema.get_number_of_warnings(member)
@@ -206,7 +215,10 @@ class Admin(commands.Cog):
         guild_ids=config.variables['guild_ids']
     )
     async def _banplayer(self, ctx: SlashContext, member: discord.Member, message: str):
-        if await general.admin_channel(ctx, ctx.author) == False:
+        if not await general.admin_channel(ctx, ctx.author):
+            return
+        if check_admin(ctx) < 3:
+            await msg.lacks_permission(ctx)
             return
         if member_schema.is_banned(member):
             await ctx.send(f"**{member.name}** is already banned.", hidden=True)
@@ -256,7 +268,10 @@ class Admin(commands.Cog):
         guild_ids=config.variables['guild_ids']
     )
     async def _revokeban(self, ctx: SlashContext, member: discord.Member):
-        if await general.admin_channel(ctx, ctx.author) == False:
+        if not await general.admin_channel(ctx, ctx.author):
+            return
+        if check_admin(ctx) < 3:
+            await msg.lacks_permission(ctx)
             return
         if member_schema.is_banned(member):
             member_schema.unban_player(member)
@@ -305,7 +320,10 @@ class Admin(commands.Cog):
         guild_ids=config.variables['guild_ids']
     )
     async def _cancel(self, ctx: SlashContext, member: discord.Member):
-        if await general.correct_channel(ctx, ctx.author) == False:
+        if not await general.correct_channel(ctx, ctx.author):
+            return
+        if check_admin(ctx) < 2:
+            await msg.lacks_permission(ctx)
             return
         if ingame_schema.is_ingame(member):
             ingame_schema.cancel_game(member)
@@ -331,7 +349,10 @@ class Admin(commands.Cog):
     )
     async def _shutdown(self, ctx: SlashContext):
         user = ctx.author
-        if await general.correct_channel(ctx, user) == False:
+        if not await general.correct_channel(ctx, user):
+            return
+        if check_admin(ctx) < 3:
+            await msg.lacks_permission(ctx)
             return
         embed = discord.Embed(description="Okay, **goodnight!** :heartpulse:")
         await ctx.send(embed=embed, hidden=True)
@@ -359,7 +380,10 @@ class Admin(commands.Cog):
     )
     async def _remove(self, ctx: SlashContext, member: str):
         user = ctx.author
-        if await general.correct_channel(ctx, user) == False:
+        if not await general.correct_channel(ctx, user):
+            return
+        if check_admin(ctx) < 2:
+            await msg.lacks_permission(ctx)
             return
         if ingame_schema.raw_member_inqueue(member):
             ingame_schema.remove_raw_member_from_queue(member)
@@ -375,9 +399,12 @@ class Admin(commands.Cog):
     async def _history(self, ctx: SlashContext):
         if not await admin_channel(ctx, ctx.author):
             return
+        if check_admin(ctx) < 1:
+            await msg.lacks_permission(ctx)
+            return
         history = game_service.get_history()
         await msg.show_history(ctx, history)
-    
+
     @cog_ext.cog_slash(
         name="removewarnings",
         description="Removes user warnings",
@@ -390,7 +417,7 @@ class Admin(commands.Cog):
             ]
         },
         options=[
-             create_option(
+            create_option(
                 name="member",
                 description="Select a member",
                 required=True,
@@ -403,7 +430,7 @@ class Admin(commands.Cog):
                 option_type=4,
                 choices=[
                     create_choice(
-                        name="1",   
+                        name="1",
                         value=1
                     ),
                     create_choice(
@@ -415,8 +442,11 @@ class Admin(commands.Cog):
         ],
         guild_ids=config.variables['guild_ids']
     )
-    async def _removewarnings(self, ctx:SlashContext, member:discord.Member, amount:int):
+    async def _removewarnings(self, ctx: SlashContext, member: discord.Member, amount: int):
         if not await admin_channel(ctx, ctx.author):
+            return
+        if check_admin(ctx) < 2:
+            await msg.lacks_permission(ctx)
             return
         warnings = member_schema.get_number_of_warnings(member)
         if warnings < 1:
@@ -459,7 +489,7 @@ class Admin(commands.Cog):
                 create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
             ]
         },
-        options = [
+        options=[
             create_option(
                 name="category",
                 description="View either banned or warnings",
@@ -479,8 +509,11 @@ class Admin(commands.Cog):
         ],
         guild_ids=config.variables['guild_ids']
     )
-    async def _moderation(self, ctx:SlashContext, category:str):
+    async def _moderation(self, ctx: SlashContext, category: str):
         if not await admin_channel(ctx, ctx.author):
+            return
+        if check_admin(ctx) < 3:
+            await msg.lacks_permission(ctx)
             return
         if category == "banned":
             banned_list = member_schema.get_all_banned()
@@ -496,7 +529,8 @@ class Admin(commands.Cog):
         else:
             warning_list = member_schema.get_all_warned()
             if warning_list.count() < 1:
-                embed = discord.Embed(title="Warned", description="No one has been **warned**.", color=msg.success_color)
+                embed = discord.Embed(title="Warned", description="No one has been **warned**.",
+                                      color=msg.success_color)
                 await ctx.send(embed=embed, hidden=True)
             else:
                 body = ""
@@ -504,6 +538,25 @@ class Admin(commands.Cog):
                     body = body + f"**Player Name**: **`{player['username']}`**\n**Player ID**: **`{player['userId']}`**\n**By**: **`{player['by']}`**\n\n"
                 embed = discord.Embed(title="Warned", description=body, color=msg.error_color)
                 await ctx.send(embed=embed, hidden=True)
+
+
+def check_admin(ctx) -> int:
+    # check if user has admin role
+    user = ctx.author
+    permissions = 0
+    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_access_role'])
+    if role in user.roles:
+        permissions = 1
+
+    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_admin_role'])
+    if role in user.roles:
+        permissions = 2
+
+    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_superadmin_role'])
+    if role in user.roles:
+        permissions = 3
+
+    return permissions
 
 
 def setup(bot):
