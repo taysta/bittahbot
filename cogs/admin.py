@@ -24,16 +24,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="newadmin",
         description="Adds admin: only super admins can do this",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, False),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False),
-                # Bittah SA - True
-                create_permission(config.variables['bittah_sa_role'], SlashCommandPermissionType.ROLE, True)
-            ]
-        },
         options=[
             create_option(
                 name="member",
@@ -66,16 +56,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="removeadmin",
         description="Removes admin: only super admins can do this",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, False),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False),
-                # Bittah SA - True
-                create_permission(config.variables['bittah_sa_role'], SlashCommandPermissionType.ROLE, True)
-            ]
-        },
         options=[
             create_option(
                 name="member",
@@ -106,14 +86,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="warn",
         description="Warn a player",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
-            ]
-        },
         options=[
             create_option(
                 name="member",
@@ -190,14 +162,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="banplayer",
         description="Bans player: only admins can do this",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
-            ]
-        },
         options=[
             create_option(
                 name="member",
@@ -249,14 +213,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="revokeban",
         description="Unbans player: only admins can do this",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
-            ]
-        },
         options=[
             create_option(
                 name="member",
@@ -301,14 +257,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="cancel",
         description="Cancel game",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
-            ]
-        },
         options=[
             create_option(
                 name="member",
@@ -337,14 +285,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="shutdown",
         description="Shuts down the bot (Admin only)",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
-            ]
-        },
         guild_ids=config.variables['guild_ids']
     )
     async def _shutdown(self, ctx: SlashContext):
@@ -360,14 +300,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="remove",
         description="Remove player from queue",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
-            ]
-        },
         options=[
             create_option(
                 name="member",
@@ -408,14 +340,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="removewarnings",
         description="Removes user warnings",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
-            ]
-        },
         options=[
             create_option(
                 name="member",
@@ -481,14 +405,6 @@ class Admin(commands.Cog):
     @cog_ext.cog_slash(
         name="moderation",
         description="Shows banned players and warnings",
-        permissions={
-            config.variables['main_guild_id']: [
-                # Bittah Admin - True
-                create_permission(config.variables['bittah_admin_role'], SlashCommandPermissionType.ROLE, True),
-                # Bittah Access - False
-                create_permission(config.variables['bittah_access_role'], SlashCommandPermissionType.ROLE, False)
-            ]
-        },
         options=[
             create_option(
                 name="category",
