@@ -1,6 +1,6 @@
+import discord
 from discord.ext import commands
 from discord_slash.context import ComponentContext
-
 from cogs.shared.add import add
 from includes import msg, custom_ids
 from models.game import GameStatus
