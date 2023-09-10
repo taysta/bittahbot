@@ -127,11 +127,11 @@ def generate_match_combinations(players: List[Player]) -> List[Tuple[Tuple[Playe
 
 
 def calculate_tolerance(match):
-    team1_ratings = [player.rating for player in match[0]]
-    team2_ratings = [player.rating for player in match[1]]
+    team1_ratings = [(100 * (player.rating.mu * (1 / (1 + player.rating.sigma) ** 2)))for player in match[0]]
+    team2_ratings = [(100 * (player.rating.mu * (1 / (1 + player.rating.sigma) ** 2)))for player in match[1]]
 
-    average_rating_team1 = sum(rate(team1_ratings)) / len(team1_ratings)
-    average_rating_team2 = sum(rate(team2_ratings)) / len(team2_ratings)
+    average_rating_team1 = sum(team1_ratings) / len(team1_ratings)
+    average_rating_team2 = sum(team2_ratings) / len(team2_ratings)
 
     return abs(average_rating_team1 - average_rating_team2)
 
