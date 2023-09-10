@@ -156,7 +156,7 @@ def calculate_delay_targets(user_ids):
     return delay_targets
 
 
-def finish(user, outcome: Outcome) -> EmptyGame | None:
+def finish(user, outcome: Outcome) -> EmptyGame:
     """
     :return: None if user is not in game
     """
