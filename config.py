@@ -51,7 +51,7 @@ variables = {
     "bronze": ":third_place:",
     "b_medal": ":medal:",
     "rank": ":heavy_minus_sign:",
-    "rank_red": ":arrow_down:"
+    "rank_red": ":crown:"
 }
 
 map_imgs = {

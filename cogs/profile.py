@@ -101,8 +101,6 @@ class Profile(commands.Cog):
             else:
                 embed.add_field(name="W/L/T*", value=f"**`Hidden`**")
 
-        embed.set_footer(
-            text="* Total Games includes significant historical data, prior to W/L/T tracking (September 2023).")
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(

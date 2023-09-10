@@ -524,8 +524,7 @@ async def show_leaderboard(ctx, leaderboard: Leaderboard):
     embed.add_field(name=f"{emojis.pencil} Total Games**", value=bold_mono(leaderboard.total_games))
     embed.add_field(name=f"{emojis.person_doing_cartwheel} Unique Players**",
                     value=bold_mono(leaderboard.unique_players))
-    embed.set_footer(text="""* Excludes players with fewer than 5 total games in the time period.
-** Excludes significant historical data, prior to W/L/T tracking (September 2023).""")
+    embed.set_footer(text="""* Excludes players with fewer than 5 total games in the time period.""")
     await ctx.send(embed=embed, hidden=True)
 
 
