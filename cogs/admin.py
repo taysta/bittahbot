@@ -456,7 +456,7 @@ class Admin(commands.Cog):
                 await ctx.send(embed=embed, hidden=True)
 
 
-def check_admin(ctx) -> int:
+async def check_admin(ctx) -> int:
     # check if user has admin role
     user = ctx.author
     permissions = 0
@@ -468,7 +468,7 @@ def check_admin(ctx) -> int:
     if role in user.roles:
         permissions = 2
 
-    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_superadmin_role'])
+    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_sa_role'])
     if role in user.roles:
         permissions = 3
 
