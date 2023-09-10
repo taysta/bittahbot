@@ -47,8 +47,7 @@ class Misc(commands.Cog):
         if not await correct_channel(ctx, ctx.author):
             return
 
-        await ctx.defer()
-        leaderboard = analytics_service.get_leaderboard(year, month)
+        leaderboard = await analytics_service.get_leaderboard(year, month)
         if leaderboard is None:
             await msg.invalid_date(ctx)
             return
