@@ -156,7 +156,7 @@ def calculate_delay_targets(user_ids):
     return delay_targets
 
 
-def finish(user, outcome: Outcome) -> EmptyGame:
+def finish(user, outcome: Outcome) -> EmptyGame | None:
     """
     :return: None if user is not in game
     """
@@ -290,9 +290,22 @@ def pick_suggested_server(players):
         if player_region != "Not Set":
             regions.append(player_region)
 
+    na_servers = ["Chicago PUG", "Los Angeles PUG"]
+    eu_servers = ["London PUG"]
     aus_servers = ["Sydney Optimised PUG"]
 
-    return random.choice(aus_servers)
+    if not regions:
+        return random.choice(aus_servers)
+
+    def popular(lst):
+        return max(set(lst), key=lst.count)
+
+    most_popular = popular(regions)
+
+    if most_popular == "EU":
+        return random.choice(eu_servers)
+    elif most_popular == "AU":
+        return random.choice(na_servers)
 
 
 def update_game_server(game_id, server):
