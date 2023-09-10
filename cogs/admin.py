@@ -38,7 +38,7 @@ class Admin(commands.Cog):
         user = ctx.author
         if not await general.admin_channel(ctx, user):
             return
-        if check_admin(ctx) < 3:
+        if await check_admin(ctx) < 3:
             await msg.lacks_permission(ctx)
             return
         if member_schema.already_admin(member):
@@ -69,7 +69,7 @@ class Admin(commands.Cog):
     async def _removeadmin(self, ctx: SlashContext, member: discord.Member):
         if not await general.admin_channel(ctx, ctx.author):
             return
-        if check_admin(ctx) < 3:
+        if await check_admin(ctx) < 3:
             await msg.lacks_permission(ctx)
             return
         if member_schema.already_admin(member):
@@ -105,7 +105,7 @@ class Admin(commands.Cog):
     async def _warn(self, ctx: SlashContext, member: discord.Member, message: str):
         if not await general.admin_channel(ctx, ctx.author):
             return
-        if check_admin(ctx) < 2:
+        if await check_admin(ctx) < 2:
             await msg.lacks_permission(ctx)
             return
         # get warnings
@@ -181,7 +181,7 @@ class Admin(commands.Cog):
     async def _banplayer(self, ctx: SlashContext, member: discord.Member, message: str):
         if not await general.admin_channel(ctx, ctx.author):
             return
-        if check_admin(ctx) < 3:
+        if await check_admin(ctx) < 3:
             await msg.lacks_permission(ctx)
             return
         if member_schema.is_banned(member):
@@ -226,7 +226,7 @@ class Admin(commands.Cog):
     async def _revokeban(self, ctx: SlashContext, member: discord.Member):
         if not await general.admin_channel(ctx, ctx.author):
             return
-        if check_admin(ctx) < 3:
+        if await check_admin(ctx) < 3:
             await msg.lacks_permission(ctx)
             return
         if member_schema.is_banned(member):
@@ -270,7 +270,7 @@ class Admin(commands.Cog):
     async def _cancel(self, ctx: SlashContext, member: discord.Member):
         if not await general.correct_channel(ctx, ctx.author):
             return
-        if check_admin(ctx) < 2:
+        if await check_admin(ctx) < 2:
             await msg.lacks_permission(ctx)
             return
         if ingame_schema.is_ingame(member):
@@ -291,7 +291,7 @@ class Admin(commands.Cog):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
-        if check_admin(ctx) < 3:
+        if await check_admin(ctx) < 3:
             await msg.lacks_permission(ctx)
             return
         embed = discord.Embed(description="Okay, **goodnight!** :heartpulse:")
@@ -314,7 +314,7 @@ class Admin(commands.Cog):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
-        if check_admin(ctx) < 2:
+        if await check_admin(ctx) < 2:
             await msg.lacks_permission(ctx)
             return
         if ingame_schema.raw_member_inqueue(member):
@@ -331,7 +331,7 @@ class Admin(commands.Cog):
     async def _history(self, ctx: SlashContext):
         if not await admin_channel(ctx, ctx.author):
             return
-        if check_admin(ctx) < 1:
+        if await check_admin(ctx) < 1:
             await msg.lacks_permission(ctx)
             return
         history = game_service.get_history()
@@ -369,7 +369,7 @@ class Admin(commands.Cog):
     async def _removewarnings(self, ctx: SlashContext, member: discord.Member, amount: int):
         if not await admin_channel(ctx, ctx.author):
             return
-        if check_admin(ctx) < 2:
+        if await check_admin(ctx) < 2:
             await msg.lacks_permission(ctx)
             return
         warnings = member_schema.get_number_of_warnings(member)
@@ -428,7 +428,7 @@ class Admin(commands.Cog):
     async def _moderation(self, ctx: SlashContext, category: str):
         if not await admin_channel(ctx, ctx.author):
             return
-        if check_admin(ctx) < 3:
+        if await check_admin(ctx) < 3:
             await msg.lacks_permission(ctx)
             return
         if category == "banned":
