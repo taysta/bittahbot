@@ -58,11 +58,11 @@ def generate_teams(queue: Queue, game_id):
     players = []
     for player in mongo.db['Queue'].find({"queue": queue.value}).limit(10):
         mongo.db['Queue'].delete_many({"userId": player['userId']})
-
+        player_profile = mongo.db['Profiles'].find_one({"userId": player['userId']})
         player_rank = mongo.db['Ranks'].find_one({"userId": player['userId']})
 
         players.append(Player(player_rank['userId'], player_rank['username'],
-                              Rating(player_rank['rank'], player_rank['confidence'], player_rank['position'])))
+                              Rating(player_rank['rank'], player_rank['confidence'], player_profile['position'])))
     set_teams_for_game(game_id, players)
 
 
