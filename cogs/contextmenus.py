@@ -31,7 +31,7 @@ class CommandContextMenus(commands.Cog):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
-        if admin.check_admin(ctx) < 1:
+        if await admin.check_admin(ctx) < 1:
             await msg.lacks_permission(ctx)
             return
 
