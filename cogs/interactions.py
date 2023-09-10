@@ -7,6 +7,7 @@ from models.game import GameStatus
 from models.queue_models import Queue
 from schemas import ingame_schema, general_schema, member_schema
 from services import game_service, map_service, queue_service
+import config
 
 
 class Interaction(commands.Cog):
