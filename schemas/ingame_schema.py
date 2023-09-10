@@ -67,7 +67,7 @@ def generate_teams(queue: Queue, game_id):
 
 
 def generate_match_combinations(players: List[Player]) -> List[Tuple[Tuple[Player, ...], Tuple[Player, ...]]]:
-    logging.info("Generating balanced matches for %d players.", len(players))
+    print("Generating balanced matches for %d players.", len(players))
 
     # Initialize generation method as None
     generation_method = None
@@ -107,14 +107,14 @@ def generate_match_combinations(players: List[Player]) -> List[Tuple[Tuple[Playe
                             generation_method = "Position"
 
     if not balanced_matches:
-        logging.warning("No balanced matches with the current player positions. Trying to use rating instead.")
+        print("No balanced matches with the current player positions. Trying to use rating instead.")
         balanced_matches = generate_balanced_matches_by_rating(players, NUM_OFFENSE_NEEDED)
         # Set the generation method as "Rating" if rating-based matches are generated
         if generation_method is None:
             generation_method = "Rating"
 
     if not balanced_matches:
-        logging.warning("No balanced matches found. Providing the 12 best unbalanced options instead.")
+        print("No balanced matches found. Providing the 12 best unbalanced options instead.")
         unbalanced_matches = generate_unbalanced_matches(players)
         # Set the generation method as "Unbalanced" if unbalanced matches are generated
         if generation_method is None:
