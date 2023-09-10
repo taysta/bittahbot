@@ -23,7 +23,7 @@ TEAM_SIZE = NUM_OFFENSE_NEEDED + NUM_CHASE_NEEDED + NUM_HOME_NEEDED
 
 
 class Player:
-    def __init__(self, user_id=0, username="", r=Rating(), position="Offence"):
+    def __init__(self, user_id=0, username="", r=Rating(), position=""):
         self.rating = r
         self.username = username
         self.user_id = user_id
@@ -60,10 +60,9 @@ def generate_teams(queue: Queue, game_id):
         mongo.db['Queue'].delete_many({"userId": player['userId']})
 
         player_rank = mongo.db['Ranks'].find_one({"userId": player['userId']})
-        position_preference = mongo.db['Profiles'].find_one({"userId": player['userId']})
 
         players.append(Player(player_rank['userId'], player_rank['username'],
-                              Rating(player_rank['rank'], player_rank['confidence'], position_preference['position'])))
+                              Rating(player_rank['rank'], player_rank['confidence'], player_rank['position'])))
     set_teams_for_game(game_id, players)
 
 
