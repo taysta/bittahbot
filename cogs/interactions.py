@@ -25,8 +25,8 @@ class Interaction(commands.Cog):
 
         if interaction_id == custom_ids.shuffle_teams:
             # check if user has admin role
-            role = discord.utils.get(ctx.guild.roles, config.variables['bittah_admin_role'])
-            if role not in user.roles:
+            role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_admin_role'])
+            if role not in interacted_by.roles:
                 if not ingame_schema.is_ingame(interacted_by):
                     await msg.not_ingame(ctx)
                     return
