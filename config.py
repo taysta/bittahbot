@@ -37,7 +37,7 @@ variables = {
     "bittah_admin_role": getenv_int("BITTAH_ADMIN_ROLE_ID"),
     "bittah_sa_role": getenv_int("BITTAH_SUPERADMIN_ROLE_ID"),
     "auto_remove": getenv_int("QUEUE_EXPIRE_MINUTES"),
-    "setup_timeout_minutes": getenv_int("PROFILE_SETUP_TIMEOUT_MINUTES"),
+    "expire_message": getenv_int("QUEUE_EXPIRE_MESSAGES"),
     "num_offense_needed": getenv_int("NUM_OFFENSE_NEEDED"),
     "num_chase_needed": getenv_int("NUM_CHASE_NEEDED"),
     "num_home_needed": getenv_int("NUM_HOME_NEEDED"),
@@ -76,4 +76,4 @@ def queues(default: bool):
         return [{"name": "Quickplay", "value": "quickplay"}]
 
     return [{"name": "All Queues", "value": "all"},
-            {"name": "Quickplay", "value": "quickplay"},]
+            {"name": "Quickplay", "value": "quickplay"}, ]
