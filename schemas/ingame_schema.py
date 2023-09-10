@@ -60,9 +60,10 @@ def generate_teams(queue: Queue, game_id):
         mongo.db['Queue'].delete_many({"userId": player['userId']})
 
         player_rank = mongo.db['Ranks'].find_one({"userId": player['userId']})
-        position_preference = player['position']  # Get player's position preference
+        position_preference = mongo.db['Profiles'].find_one({"userId": player['userId']})
+
         players.append(Player(player_rank['userId'], player_rank['username'],
-                              Rating(player_rank['rank'], player_rank['confidence'], position_preference)))
+                              Rating(player_rank['rank'], player_rank['confidence'], position_preference['position'])))
     set_teams_for_game(game_id, players)
 
 
