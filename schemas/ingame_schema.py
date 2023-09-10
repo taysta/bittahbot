@@ -8,17 +8,26 @@ from discord import User, Member
 from pymongo import ASCENDING
 from trueskill import Rating, quality, rate
 
+import config
 from includes import custom_ids
 from includes import mongo
 from models.game import GameStatus, EmptyGame
 from models.queue_models import Queue
 
+# Define constants
+NUM_OFFENSE_NEEDED = config.variables['num_offense_needed']
+NUM_CHASE_NEEDED = config.variables['num_chase_needed']
+NUM_HOME_NEEDED = config.variables['num_home_needed']
+RATING_TOLERANCE = config.variables['rating_tolerance']
+TEAM_SIZE = NUM_OFFENSE_NEEDED + NUM_CHASE_NEEDED + NUM_HOME_NEEDED
+
 
 class Player:
-    def __init__(self, user_id=0, username="", r=Rating()):
+    def __init__(self, user_id=0, username="", r=Rating(), position="Offence"):
         self.rating = r
         self.username = username
         self.user_id = user_id
+        self.position = position
 
     def __repr__(self):
         return f"Player(user_id={self.user_id}, username={self.username}"
@@ -51,41 +60,124 @@ def generate_teams(queue: Queue, game_id):
         mongo.db['Queue'].delete_many({"userId": player['userId']})
 
         player_rank = mongo.db['Ranks'].find_one({"userId": player['userId']})
+        position_preference = player['position']  # Get player's position preference
         players.append(Player(player_rank['userId'], player_rank['username'],
-                              Rating(player_rank['rank'], player_rank['confidence'])))
+                              Rating(player_rank['rank'], player_rank['confidence'], position_preference)))
     set_teams_for_game(game_id, players)
 
 
-def generate_match_combinations(players: List) -> List[Tuple[Tuple, Tuple]]:
-    players_by_id = {player.user_id: player for player in players}
-    ids = set(players_by_id.keys())
+def generate_match_combinations(players: List[Player]) -> List[Tuple[Tuple[Player, ...], Tuple[Player, ...]]]:
+    logging.info("Generating balanced matches for %d players.", len(players))
 
-    combos_of_five = itertools.combinations(ids, 5)
-    teams_used = set()
-    matches: List[Tuple[Tuple[int]]] = []
+    # Initialize generation method as None
+    generation_method = None
 
-    for combo_of_five in combos_of_five:
-        team1_sorted_tuple = tuple(sorted(combo_of_five))
-        team2_sorted_tuple = tuple(sorted(ids.difference(set(team1_sorted_tuple))))
+    offense_players = [player for player in players if player.position in ('offense', 'flexible')]
+    chase_players = [player for player in players if player.position in ('chase', 'flexible')]
+    home_players = [player for player in players if player.position in ('home', 'flexible')]
 
-        if team1_sorted_tuple in teams_used or team2_sorted_tuple in teams_used:
-            continue
+    players.sort(key=lambda player: player.rating, reverse=True)
 
-        teams_used.add(team1_sorted_tuple)
-        teams_used.add(team2_sorted_tuple)
+    balanced_matches = []
 
-        matches.append((tuple(team1_sorted_tuple), tuple(team2_sorted_tuple)))
+    offense_permutations = permutations(offense_players, NUM_OFFENSE_NEEDED)
+    chase_permutations = permutations(chase_players, NUM_CHASE_NEEDED)
+    home_permutations = permutations(home_players, NUM_HOME_NEEDED)
 
-    return [tuple(tuple(players_by_id[player_id] for player_id in team) for team in match) for match in matches]
+    for team1_offense in offense_permutations:
+        for team1_chase in chase_permutations:
+            for team1_home in home_permutations:
+                team1 = team1_offense + team1_chase + team1_home
+                remaining_players = list(set(players) - set(team1))
+
+                if len(remaining_players) >= TEAM_SIZE:
+                    team2_offense = generate_team_by_position(remaining_players, NUM_OFFENSE_NEEDED,
+                                                              ('offense', 'flexible'))
+                    team2_chase = generate_team_by_position(remaining_players, NUM_CHASE_NEEDED, ('chase', 'flexible'))
+                    team2_home = generate_team_by_position(remaining_players, NUM_HOME_NEEDED, ('home', 'flexible'))
+
+                    team2 = team2_offense + team2_chase + team2_home
+
+                    if len(team1) == TEAM_SIZE and len(team2) == TEAM_SIZE:
+                        match = (team1, team2)
+                        tolerance = calculate_tolerance(match)
+                        if is_balanced_match(tolerance, RATING_TOLERANCE):
+                            balanced_matches.append(match)
+                            # Set the generation method as "Position"
+                            generation_method = "Position"
+
+    if not balanced_matches:
+        logging.warning("No balanced matches with the current player positions. Trying to use rating instead.")
+        balanced_matches = generate_balanced_matches_by_rating(players, NUM_OFFENSE_NEEDED)
+        # Set the generation method as "Rating" if rating-based matches are generated
+        if generation_method is None:
+            generation_method = "Rating"
+
+    if not balanced_matches:
+        logging.warning("No balanced matches found. Providing the 12 best unbalanced options instead.")
+        unbalanced_matches = generate_unbalanced_matches(players)
+        # Set the generation method as "Unbalanced" if unbalanced matches are generated
+        if generation_method is None:
+            generation_method = "Unbalanced"
+        return generation_method, sorted(unbalanced_matches,
+                                         key=lambda unbalanced_match: calculate_tolerance(unbalanced_match))[:12]
+
+    return generation_method, sorted(balanced_matches, key=lambda balanced_match: calculate_tolerance(balanced_match))
+
+
+def calculate_tolerance(match):
+    team1_ratings = [player.rating for player in match[0]]
+    team2_ratings = [player.rating for player in match[1]]
+
+    average_rating_team1 = sum(team1_ratings) / len(team1_ratings)
+    average_rating_team2 = sum(team2_ratings) / len(team2_ratings)
+
+    return abs(average_rating_team1 - average_rating_team2)
+
+
+def is_balanced_match(tolerance, rating_tolerance):
+    return tolerance <= rating_tolerance
+
+
+def generate_team_by_position(remaining_players, num_needed, positions):
+    team = []
+    for player in remaining_players:
+        if player.position in positions and len(team) < num_needed:
+            team.append(player)
+    return team
+
+
+def generate_balanced_matches_by_rating(players, rating_tolerance):
+    balanced_matches = []
+    for team1 in combinations(players, TEAM_SIZE):
+        remaining_players = list(set(players) - set(team1))
+        for team2 in combinations(remaining_players, TEAM_SIZE):
+            if len(team1) == TEAM_SIZE and len(team2) == TEAM_SIZE:
+                match = (team1, team2)
+                tolerance = calculate_tolerance(match)
+                if is_balanced_match(tolerance, rating_tolerance):
+                    balanced_matches.append(match)
+    return balanced_matches
+
+
+def generate_unbalanced_matches(players):
+    unbalanced_matches = []
+    for team1 in combinations(players, TEAM_SIZE):
+        remaining_players = list(set(players) - set(team1))
+        for team2 in combinations(remaining_players, TEAM_SIZE):
+            if len(team1) == TEAM_SIZE and len(team2) == TEAM_SIZE:
+                match = (team1, team2)
+                unbalanced_matches.append(match)
+    return unbalanced_matches
 
 
 def set_teams_for_game(game_id, players):
-    combinations_of_matches = generate_match_combinations(players)
+    generation_method, combinations_of_matches = generate_match_combinations(players)
     reshuffles = get_game(game_id)["reshuffles"]
     if reshuffles > len(combinations_of_matches):
         print("Exceeded max number of reshuffles; resetting to 0")
         reshuffles = 0
-    best_match = determine_best_match(combinations_of_matches, reshuffles)
+    best_match = determine_best_match(combinations_of_matches, reshuffles, generation_method)
     mongo.db["GameData"].update_one({"gameId": game_id}, {
         "$set": {
             "reshuffles": reshuffles + 1
@@ -116,7 +208,7 @@ def set_teams_for_game(game_id, players):
         mongo.db['Ingame'].insert_one(data)
 
 
-def determine_best_match(combinations, reshuffles):
+def determine_best_match(combinations, reshuffles, generation_method):
     print(f'Testing Combinations.....reshuffles: {reshuffles}')
 
     scores = []
@@ -132,6 +224,15 @@ def determine_best_match(combinations, reshuffles):
             team_2_ratings.append(player.rating)
 
         quality_score = quality([team_1_ratings, team_2_ratings])
+
+        # Assign quality scores based on generation method
+        if generation_method == "Position":
+            quality_score *= 2  # Higher quality for position-balanced matches
+        elif generation_method == "Rating":
+            quality_score *= 1.5  # Intermediate quality for rating-balanced matches
+        else:
+            quality_score *= 1  # Base quality for unbalanced matches
+
         scores.append({'index': i, 'quality': quality_score})
 
     scores = sorted(scores, key=lambda s: (s['quality']), reverse=True)
@@ -157,7 +258,7 @@ def shuffle_teams(game_id):
 
 
 def update_game_status(game_id, status):
-    query = {
+    status_query = {
         "gameId": game_id
     }
     data = {
@@ -165,7 +266,7 @@ def update_game_status(game_id, status):
             "status": status
         }
     }
-    mongo.db['GameData'].update_one(query, data)
+    mongo.db['GameData'].update_one(status_query, data)
 
 
 def get_captains(game_id):
@@ -373,9 +474,11 @@ def get_games_last_24_hours():
 
 def new_map(game_id, maps, button_id):
     game = mongo.db['GameData'].find_one({"gameId": game_id})
+    new_maps = []  # Initialize new_maps to an empty list
+
     if game['queue'] == "quickplay":
         mongo.db['GameData'].update_one({"gameId": game_id}, {"$set": {"maps": maps}})
-        return maps
+        new_maps = maps  # Assign maps to new_maps
     else:
         if game['queue'] == "competitive":
             if button_id == custom_ids.shuffle_map_1:
@@ -384,7 +487,8 @@ def new_map(game_id, maps, button_id):
             elif button_id == custom_ids.shuffle_map_2:
                 new_maps = [game['maps'][0], maps[0]]
             mongo.db['GameData'].update_one({"gameId": game_id}, {"$set": {"maps": new_maps}})
-        return new_maps
+
+    return new_maps
 
 
 def choose_different_map(game_id, _map):
@@ -423,8 +527,10 @@ def get_recent_games(num_games) -> List[EmptyGame]:
     return [EmptyGame(game['gameId'], game['started'], Queue(game['queue']), game.get('ended'),
                       GameStatus(game['status']), game.get('maps')) for game in data]
 
+
 def update_game_suggested_server(game_id, server):
-    mongo.db['GameData'].update_one({"gameId":game_id}, {"$set": {"server":server}})
+    mongo.db['GameData'].update_one({"gameId": game_id}, {"$set": {"server": server}})
+
 
 def get_game_server(game_id):
-    return mongo.db['GameData'].find_one({"gameId":game_id})['server']
+    return mongo.db['GameData'].find_one({"gameId": game_id})['server']
