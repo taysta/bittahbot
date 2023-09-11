@@ -78,7 +78,7 @@ class Profile(commands.Cog):
             else:
                 embed.add_field(name="W/L/T*", value=f"**`Hidden`**")
         else:
-            member_schema.check_profile(ctx, member)
+            member_schema.check_profile(member)
             profile = member_schema.get_profile(member)
             profile_stats = member_schema.get_player_stats(member.id)
             region_emojis = {
