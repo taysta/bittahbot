@@ -22,68 +22,6 @@ class Admin(commands.Cog):
         print("Cog Admin: Loaded")
 
     @cog_ext.cog_slash(
-        name="newadmin",
-        description="Adds admin: only super admins can do this",
-        options=[
-            create_option(
-                name="member",
-                description="Choose a member",
-                required=True,
-                option_type=6
-            )
-        ],
-        guild_ids=config.variables['guild_ids']
-    )
-    async def _newadmin(self, ctx: SlashContext, member: discord.Member):
-        user = ctx.author
-        if not await general.admin_channel(ctx, user):
-            return
-        if await check_admin(ctx) < 3:
-            await msg.lacks_permission(ctx)
-            return
-        if member_schema.already_admin(member):
-            await ctx.send(f"**{member.name}** is already an admin.", hidden=True)
-        else:
-            member_schema.add_admin(member)
-
-            try:
-                role = discord.utils.get(member.guild.roles, id=config.variables['bittah_admin_role'])
-                await member.add_roles(role)
-            except Exception as e:
-                print(e)
-            await msg.success(ctx, f"**{member.name}** is now an **admin**", hidden=True)
-
-    @cog_ext.cog_slash(
-        name="removeadmin",
-        description="Removes admin: only super admins can do this",
-        options=[
-            create_option(
-                name="member",
-                description="Choose a member",
-                required=True,
-                option_type=6
-            )
-        ],
-        guild_ids=config.variables['guild_ids']
-    )
-    async def _removeadmin(self, ctx: SlashContext, member: discord.Member):
-        if not await general.admin_channel(ctx, ctx.author):
-            return
-        if await check_admin(ctx) < 3:
-            await msg.lacks_permission(ctx)
-            return
-        if member_schema.already_admin(member):
-            member_schema.remove_admin(member)
-            try:
-                role = discord.utils.get(member.guild.roles, id=config.variables['bittah_admin_role'])
-                await member.remove_roles(role)
-            except Exception as e:
-                print(e)
-            await msg.error(ctx, f"**{member.name}** is no longer an admin")
-        else:
-            await ctx.send(f"**{member.name}** is not an admin.", hidden=True)
-
-    @cog_ext.cog_slash(
         name="warn",
         description="Warn a player",
         options=[
@@ -456,7 +394,7 @@ class Admin(commands.Cog):
                 await ctx.send(embed=embed, hidden=True)
 
 
-async def check_admin(ctx) -> int:
+async def check_admin(ctx: SlashContext) -> int:
     # check if user has admin role
     user = ctx.author
     permissions = 0
@@ -470,6 +408,24 @@ async def check_admin(ctx) -> int:
 
     role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_sa_role'])
     if role in user.roles:
+        permissions = 3
+
+    return permissions
+
+
+async def check_admin_member(member: discord.Member) -> int:
+    # check if member has admin role
+    permissions = 0
+    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_access_role'])
+    if role in member.roles:
+        permissions = 1
+
+    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_admin_role'])
+    if role in member.roles:
+        permissions = 2
+
+    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_sa_role'])
+    if role in member.roles:
         permissions = 3
 
     return permissions

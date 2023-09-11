@@ -66,21 +66,6 @@ def is_banned(user):
         return False
 
 
-def already_admin(member):
-    if mongo.db['Admins'].count_documents({"userId": member.id}) > 0:
-        return True
-    else:
-        return False
-
-
-def add_admin(member):
-    mongo.db['Admins'].insert_one({"userId": member.id, "username": member.name})
-
-
-def remove_admin(member):
-    mongo.db['Admins'].delete_one({"userId": member.id})
-
-
 def is_banned(member):
     if mongo.db['Banned'].count_documents({"userId": member.id}) > 0:
         return True
@@ -101,10 +86,6 @@ def unban_player(member):
 def get_top_players():
     result = mongo.db['Profiles'].find({}).sort("gamesPlayed", -1).limit(10)
     return result
-
-
-def get_admins():
-    return mongo.db['Admins'].find({}).limit(10)
 
 
 def get_total_players():

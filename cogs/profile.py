@@ -12,6 +12,8 @@ import config
 from includes import general, msg
 from schemas import member_schema, general_schema
 
+import cogs.admin
+
 
 class Profile(commands.Cog):
     def __init__(self, bot):
@@ -51,10 +53,15 @@ class Profile(commands.Cog):
             embed = discord.Embed()
             embed.set_author(icon_url=user.avatar_url, name=user.name)
             embed.set_thumbnail(url=user.avatar_url)
-            if member_schema.already_admin(user):
-                embed.add_field(name="Role", value="**`Bittah Admin`**")
-            else:
+
+            access_level = admin.check_admin_member(member)
+            if access_level == 1:
                 embed.add_field(name="Role", value="**`Gamer`**")
+            elif access_level == 2:
+                embed.add_field(name="Role", value="**`Admin`**")
+            elif access_level == 3:
+                embed.add_field(name="Role", value="**`Super Admin`**")
+
             embed.add_field(name="Total Games*", value=f"{config.variables['rank']} **`{profile['gamesPlayed']}`**",
                             inline=True)
             embed.add_field(name="Region", value=f"{region_emojis[profile['region']]}**`{profile['region']}`**")
@@ -82,10 +89,15 @@ class Profile(commands.Cog):
             embed = discord.Embed()
             embed.set_author(icon_url=member.avatar_url, name=member.name)
             embed.set_thumbnail(url=member.avatar_url)
-            if member_schema.already_admin(member):
-                embed.add_field(name="Role", value="**`Bittah Admin`**")
-            else:
+
+            access_level = admin.check_admin_member(member)
+            if access_level == 1:
                 embed.add_field(name="Role", value="**`Gamer`**")
+            elif access_level == 2:
+                embed.add_field(name="Role", value="**`Admin`**")
+            elif access_level == 3:
+                embed.add_field(name="Role", value="**`Super Admin`**")
+
             embed.add_field(name="Total Games*", value=f"{config.variables['rank']} **`{profile['gamesPlayed']}`**",
                             inline=True)
             embed.add_field(name="Region", value=f"{region_emojis[profile['region']]}**`{profile['region']}`**")
@@ -101,7 +113,7 @@ class Profile(commands.Cog):
             else:
                 embed.add_field(name="W/L/T*", value=f"**`Hidden`**")
 
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, hidden=True)
 
     @cog_ext.cog_slash(
         name="setup",
