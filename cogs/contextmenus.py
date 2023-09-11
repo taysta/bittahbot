@@ -12,6 +12,7 @@ from includes import msg, general
 from models.queue_models import Queue as QueueEnum
 from schemas import queue_schema, general_schema, member_schema
 import cogs.admin
+from cogs.admin import check_admin
 
 
 class CommandContextMenus(commands.Cog):

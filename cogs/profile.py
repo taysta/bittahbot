@@ -13,7 +13,7 @@ from includes import general, msg
 from schemas import member_schema, general_schema
 
 import cogs.admin
-from cogs.admin import check_admin_member
+from cogs.admin import check_admin, check_admin_member
 
 
 class Profile(commands.Cog):
@@ -39,7 +39,7 @@ class Profile(commands.Cog):
     )
     async def profile(self, ctx: SlashContext, member: discord.Member = None):
         user = ctx.author
-        if await general.correct_channel(ctx, user) == False:
+        if not await general.correct_channel(ctx, user):
             return
         if member is None:
             member_schema.check_profile(user)
@@ -55,7 +55,7 @@ class Profile(commands.Cog):
             embed.set_author(icon_url=user.avatar_url, name=user.name)
             embed.set_thumbnail(url=user.avatar_url)
 
-            access_level = await check_admin_member(ctx, member)
+            access_level = await check_admin(ctx)
             if access_level == 1:
                 embed.add_field(name="Role", value="**`Gamer`**")
             elif access_level == 2:
@@ -91,7 +91,7 @@ class Profile(commands.Cog):
             embed.set_author(icon_url=member.avatar_url, name=member.name)
             embed.set_thumbnail(url=member.avatar_url)
 
-            access_level = await check_admin_member(member)
+            access_level = await check_admin_member(ctx, member)
             if access_level == 1:
                 embed.add_field(name="Role", value="**`Gamer`**")
             elif access_level == 2:
