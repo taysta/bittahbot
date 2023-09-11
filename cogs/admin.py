@@ -394,7 +394,7 @@ class Admin(commands.Cog):
                 await ctx.send(embed=embed, hidden=True)
 
 
-async def check_admin(ctx: SlashContext) -> int:
+async def check_admin(ctx) -> int:
     # check if user has admin role
     user = ctx.author
     permissions = 0

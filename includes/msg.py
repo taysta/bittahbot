@@ -517,12 +517,12 @@ async def show_leaderboard(ctx, leaderboard: Leaderboard):
     embed.add_field(name=f"{emojis.video_game} Most Games",
                     value=format_pairs_into_ranked_lines(leaderboard.most_games_played))
     embed.add_field(name=f"{emojis.trophy} Most Wins", value=format_pairs_into_ranked_lines(leaderboard.most_games_won))
-    embed.add_field(name=f"{emojis.chart_with_upwards_trend} Highest Winrate*",
+    embed.add_field(name=f"{emojis.chart_with_upwards_trend} Highest Winrate",
                     value=format_pairs_into_ranked_lines(leaderboard.highest_winrate))
     embed.add_field(name=f"{emojis.map_emoji} Most Popular Maps",
                     value=bold_mono(format_pairs_into_lines(leaderboard.most_popular_maps)))
     embed.add_field(name=f"{emojis.pencil} Total Games**", value=bold_mono(leaderboard.total_games))
-    embed.add_field(name=f"{emojis.person_doing_cartwheel} Unique Players**",
+    embed.add_field(name=f"{emojis.person_doing_cartwheel} Unique Players*",
                     value=bold_mono(leaderboard.unique_players))
     embed.set_footer(text="""* Excludes players with fewer than 5 total games in the time period.""")
     await ctx.send(embed=embed, hidden=True)

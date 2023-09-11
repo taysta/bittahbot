@@ -62,8 +62,10 @@ class Profile(commands.Cog):
                 embed.add_field(name="Role", value="**`Admin`**")
             elif access_level == 3:
                 embed.add_field(name="Role", value="**`Super Admin`**")
+            else:
+                embed.add_field(name="Role", value="**`No Access`**")
 
-            embed.add_field(name="Total Games*", value=f"{config.variables['rank']} **`{profile['gamesPlayed']}`**",
+            embed.add_field(name="Total Games", value=f"{config.variables['rank']} **`{profile['gamesPlayed']}`**",
                             inline=True)
             embed.add_field(name="Region", value=f"{region_emojis[profile['region']]}**`{profile['region']}`**")
             if profile['lastPlayed'] != "Never":
@@ -98,8 +100,10 @@ class Profile(commands.Cog):
                 embed.add_field(name="Role", value="**`Admin`**")
             elif access_level == 3:
                 embed.add_field(name="Role", value="**`Super Admin`**")
+            else:
+                embed.add_field(name="Role", value="**`No Access`**")
 
-            embed.add_field(name="Total Games*", value=f"{config.variables['rank']} **`{profile['gamesPlayed']}`**",
+            embed.add_field(name="Total Games", value=f"{config.variables['rank']} **`{profile['gamesPlayed']}`**",
                             inline=True)
             embed.add_field(name="Region", value=f"{region_emojis[profile['region']]}**`{profile['region']}`**")
             if profile['lastPlayed'] != "Never":
