@@ -413,7 +413,7 @@ async def check_admin(ctx: SlashContext) -> int:
     return permissions
 
 
-async def check_admin_member(member: discord.Member) -> int:
+async def check_admin_member(ctx: SlashContext, member: discord.Member) -> int:
     # check if member has admin role
     permissions = 0
     role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_access_role'])

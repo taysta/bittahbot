@@ -55,7 +55,7 @@ class Profile(commands.Cog):
             embed.set_author(icon_url=user.avatar_url, name=user.name)
             embed.set_thumbnail(url=user.avatar_url)
 
-            access_level = await check_admin_member(member)
+            access_level = await check_admin_member(ctx, member)
             if access_level == 1:
                 embed.add_field(name="Role", value="**`Gamer`**")
             elif access_level == 2:
@@ -78,7 +78,7 @@ class Profile(commands.Cog):
             else:
                 embed.add_field(name="W/L/T*", value=f"**`Hidden`**")
         else:
-            member_schema.check_profile(member)
+            member_schema.check_profile(ctx, member)
             profile = member_schema.get_profile(member)
             profile_stats = member_schema.get_player_stats(member.id)
             region_emojis = {
