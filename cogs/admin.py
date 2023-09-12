@@ -269,7 +269,7 @@ class Admin(commands.Cog):
     async def _history(self, ctx: SlashContext):
         if not await admin_channel(ctx, ctx.author):
             return
-        if await check_admin(ctx) < 1:
+        if await check_admin(ctx) < 2:
             await msg.lacks_permission(ctx)
             return
         history = game_service.get_history()
