@@ -38,8 +38,9 @@ class Queue(commands.Cog):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
-        if await check_admin(ctx) < 1:
+        if await (check_admin(ctx) < 1 and config.variables['needs_access'] == 1):
             await msg.lacks_permission(ctx)
+            return
         queue_enum = QueueEnum(queue)
         await add(ctx, self.bot, queue_enum)
 
