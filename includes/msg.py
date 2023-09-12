@@ -623,7 +623,7 @@ async def show_history(ctx, games: List[FinishedGame]):
     """ for game in games])
 
     embed = discord.Embed(title="Game History", description=description)
-    await ctx.send(embed=embed, components=buttons, hidden=True)
+    await ctx.send(embed=embed, hidden=True)
 
 async def result_flipped(ctx, game_id):
     embed = discord.Embed(description=f"Game result reversed for `{game_id}`")
