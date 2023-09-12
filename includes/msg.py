@@ -575,7 +575,7 @@ async def force_remove_from_queue(ctx, admin, member):
     await ctx.send(embed=embed)
 
 
-async def show_history(ctx, games: List[FinishedGame]):
+async def show_matches(ctx, games: List[FinishedGame]):
     if len(games) == 0:
         description = "No recent games"
         embed = discord.Embed(title="Game History", description=description)
@@ -605,8 +605,25 @@ async def show_history(ctx, games: List[FinishedGame]):
     buttons = [create_actionrow(select)]
 
     embed = discord.Embed(title="Game History", description=description)
-    await ctx.send(embed=embed, components=buttons)
+    await ctx.send(embed=embed, components=buttons, hidden=True)
 
+async def show_history(ctx, games: List[FinishedGame]):
+    if len(games) == 0:
+        description = "No recent games"
+        embed = discord.Embed(title="Game History", description=description)
+        await ctx.send(embed=embed)
+        return
+
+    description = "\n----------\n".join([f"""
+    **{game.game.queue.value.upper()} Game on {", ".join(game.game.maps)}**
+    `{timeago.format(game.ended_at, datetime.now())}`
+    Tie: {game.tie}
+    Winners: {", ".join(game.winners)}
+    Losers: {", ".join(game.losers)}
+    """ for game in games])
+
+    embed = discord.Embed(title="Game History", description=description)
+    await ctx.send(embed=embed, components=buttons, hidden=True)
 
 async def result_flipped(ctx, game_id):
     embed = discord.Embed(description=f"Game result reversed for `{game_id}`")

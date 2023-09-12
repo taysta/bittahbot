@@ -269,11 +269,22 @@ class Admin(commands.Cog):
     async def _history(self, ctx: SlashContext):
         if not await admin_channel(ctx, ctx.author):
             return
+        history = game_service.get_history()
+        await msg.show_history(ctx, history)
+
+    @cog_ext.cog_slash(
+        name="matches",
+        description="Show game history (admin)",
+        guild_ids=config.variables['guild_ids'],
+    )
+    async def _matches(self, ctx: SlashContext):
+        if not await admin_channel(ctx, ctx.author):
+            return
         if await check_admin(ctx) < 2:
             await msg.lacks_permission(ctx)
             return
         history = game_service.get_history()
-        await msg.show_history(ctx, history)
+        await msg.show_matches(ctx, history)
 
     @cog_ext.cog_slash(
         name="removewarnings",
