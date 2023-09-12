@@ -32,9 +32,6 @@ class CommandContextMenus(commands.Cog):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
-        if await check_admin(ctx) < 1:
-            await msg.lacks_permission(ctx)
-            return
 
         queue_enum = QueueEnum("quickplay")
         await add(ctx, self.bot, queue_enum)
