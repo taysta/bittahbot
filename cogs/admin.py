@@ -402,12 +402,12 @@ async def check_admin(ctx) -> int:
     if role in user.roles:
         permissions = 1
 
-    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_admin_role'])
-    if role in user.roles:
+    admin_role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_admin_role'])
+    if admin_role in user.roles:
         permissions = 2
 
-    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_sa_role'])
-    if role in user.roles:
+    super_admin_role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_sa_role'])
+    if super_admin_role in user.roles:
         permissions = 3
 
     return permissions
@@ -420,12 +420,12 @@ async def check_admin_member(ctx: SlashContext, member: discord.Member) -> int:
     if role in member.roles:
         permissions = 1
 
-    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_admin_role'])
-    if role in member.roles:
+    admin_role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_admin_role'])
+    if admin_role in member.roles:
         permissions = 2
 
-    role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_sa_role'])
-    if role in member.roles:
+    super_admin_role = discord.utils.get(ctx.guild.roles, id=config.variables['bittah_sa_role'])
+    if super_admin_role in member.roles:
         permissions = 3
 
     return permissions

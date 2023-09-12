@@ -29,7 +29,7 @@ variables = {
     "channel": getenv("BITTAH_DISCORD_CHANNEL"),
     "channelid": getenv_int("BITTAH_DISCORD_CHANNEL_ID"),
     "guild_ids": getenv_list_int("BITTAH_DISCORD_GUILD_IDS"),
-    "admin_channel": getenv("BITTAH_DISCORD_ADMIN_CHANNEL_ID"),
+    "admin_channel": getenv("BITTAH_DISCORD_ADMIN_CHANNEL"),
     "twitch_client_id": getenv("TWITCH_CLIENT_ID"),
     "twitch_client_secret": getenv("TWITCH_CLIENT_SECRET"),
     "twitch_game_id": getenv_int("TWITCH_GAME_ID"),
