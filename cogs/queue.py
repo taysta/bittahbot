@@ -20,7 +20,7 @@ class Queue(commands.Cog):
     async def on_ready(self):
         print("Queue Cog: Loaded")
 
-    @cog_ext.cog_slash(
+    @cog_ext.hybrid_command(
         name="add",
         description="Adds you to a queue",
         options=[
@@ -69,7 +69,7 @@ class Queue(commands.Cog):
         else:
             await msg.removed_from_all_queues(ctx, self.bot, queue_schema.get_all_queue_counts())
 
-    @cog_ext.cog_slash(
+    @cog_ext.hybrid_command(
         name="status",
         description="Show the queue status",
         guild_ids=config.variables['guild_ids']
