@@ -129,7 +129,6 @@ async def game_started(ctx, bot, game: Game):
     )
 
     button_action_row = create_actionrow(*buttons)
-    maps_action_row = create_actionrow(maps)
     maps = game.maps
 
     content = f"**`{str(game.queue.value).capitalize()} Game Started`**"
@@ -157,7 +156,7 @@ async def game_started(ctx, bot, game: Game):
         embed.set_thumbnail(url=config.map_imgs[maps[0].lower()])
 
     await send_in_correct_channel(ctx, bot, content=content, embed=embed,
-                                  components=[button_action_row, maps_action_row])
+                                  components=[button_action_row])
 
 
 async def display_chosen_map(ctx, game, old_map, _map):

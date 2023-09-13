@@ -56,18 +56,24 @@ variables = {
 }
 
 map_imgs = {
-    "exhumed": "https://i.imgur.com/MQGW6eJ.jpg",
-    "elite": "https://i.imgur.com/9Xib6tF.jpg",
     "brynhildr": "https://i.imgur.com/9CAybAC.jpg",
-    "minora": "https://i.imgur.com/YMetT8z.jpg",
-    "ingonyama": "https://i.imgur.com/MRbwf5u.jpg",
-    "twilightgrove": "https://i.imgur.com/GTzvA8t.jpg",
-    "kryosis": "https://i.imgur.com/HJuawtp.jpg",
-    "nightflare": "https://i.imgur.com/8wMHNjK.jpg",
-    "outpost": "https://i.imgur.com/Nkc04Di.jpg",
+    "crater": "",
+    "elite": "https://i.imgur.com/9Xib6tF.jpg",
+    "exhumed": "https://i.imgur.com/MQGW6eJ.jpg",
     "forlorn": "https://i.imgur.com/igFANQB.png",
+    "hadrian": "",
+    "ingonyama": "https://i.imgur.com/MRbwf5u.jpg",
+    "kryosis": "https://i.imgur.com/HJuawtp.jpg",
+    "minora": "https://i.imgur.com/YMetT8z.jpg",
+    "nightflare": "https://i.imgur.com/8wMHNjK.jpg",
+    "octane": "",
+    "outpost": "https://i.imgur.com/Nkc04Di.jpg",
+    "raptor": "",
     "relay": "https://i.imgur.com/jQnPNBh.png",
+    "riftvalley": "",
+    "silvas": "",
     "sunward": "https://i.imgur.com/aIr4rjt.png",
+    "twilightgrove": "https://i.imgur.com/GTzvA8t.jpg",
     "yolandi": "https://i.imgur.com/WwkEDgj.png",
 }
 
