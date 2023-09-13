@@ -49,6 +49,7 @@ async def autoremove_expired_messages():
 @client.event
 async def on_ready():
     print(f"BITTAH ONLINE | VERSION: {config.variables['version']}")
+    print(discord.__version__)
     await client.change_presence(activity=discord.Game(name="Midair 2"))
     autoremove.start()
     autoremove_expired_messages.start()

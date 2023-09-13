@@ -10,6 +10,7 @@ from models.queue_models import Queue as QueueEnum
 from schemas import member_schema, queue_schema
 import cogs.admin
 from cogs.admin import check_admin
+from main import client
 
 
 class Queue(commands.Cog):
@@ -20,7 +21,7 @@ class Queue(commands.Cog):
     async def on_ready(self):
         print("Queue Cog: Loaded")
 
-    @commands.hybrid_command(
+    @client.hybrid_command(
         name="add",
         description="Adds you to a queue",
         options=[
@@ -44,7 +45,7 @@ class Queue(commands.Cog):
         queue_enum = QueueEnum(queue)
         await add(ctx, self.bot, queue_enum)
 
-    @commands.hybrid_command(
+    @client.hybrid_command(
         name="del",
         description="Removes you from queue",
         options=[
@@ -69,7 +70,7 @@ class Queue(commands.Cog):
         else:
             await msg.removed_from_all_queues(ctx, self.bot, queue_schema.get_all_queue_counts())
 
-    @commands.hybrid_command(
+    @client.hybrid_command(
         name="status",
         description="Show the queue status",
         guild_ids=config.variables['guild_ids']
