@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import hybrid_command
 from discord_slash import cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option
 
@@ -20,7 +21,7 @@ class Queue(commands.Cog):
     async def on_ready(self):
         print("Queue Cog: Loaded")
 
-    @commands.hybrid_command(
+    @hybrid_command(
         name="add",
         description="Adds you to a queue",
         options=[
@@ -44,7 +45,7 @@ class Queue(commands.Cog):
         queue_enum = QueueEnum(queue)
         await add(ctx, self.bot, queue_enum)
 
-    @cog_ext.cog_slash(
+    @commands.hybrid_command(
         name="del",
         description="Removes you from queue",
         options=[
