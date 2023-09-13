@@ -69,7 +69,7 @@ class Queue(commands.Cog):
         else:
             await msg.removed_from_all_queues(ctx, self.bot, queue_schema.get_all_queue_counts())
 
-    @commands.hybrid_command(
+    @cog_ext.cog_slash(
         name="status",
         description="Show the queue status",
         guild_ids=config.variables['guild_ids']
