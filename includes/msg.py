@@ -137,18 +137,18 @@ async def game_started(ctx, bot, game: Game):
         **`Maps:`** {', '.join(maps)}
     """
     embed = discord.Embed(title="Game Started", description=body, color=success_color)
-    team1_captain = f"{config.variables['rank_red']} **`{str(member_schema.get_profile_by_id(game.team1_captain.user_id)['gamesPlayed'])}`** **`{game.team1_captain.name[:14]}`**"
-    team2_captain = f"{config.variables['rank_red']} **`{str(member_schema.get_profile_by_id(game.team2_captain.user_id)['gamesPlayed'])}`** **`{game.team2_captain.name[:14]}`**"
+    team1_captain = f"{config.variables['rank_red']} **`{game.team1_captain.name[:14]}`**"
+    team2_captain = f"{config.variables['rank_red']} **`{game.team2_captain.name[:14]}`**"
 
     team1_players = []
     team2_players = []
 
     for player in game.team1_others:
         team1_players.append(
-            f"{config.variables['rank']} **`{str(member_schema.get_profile_by_id(player.user_id)['gamesPlayed'])}`** **`{player.name[:14]}`**")
+            f"{config.variables['rank']} **`{player.name[:14]}`**")
     for player in game.team2_others:
         team2_players.append(
-            f"{config.variables['rank']} **`{str(member_schema.get_profile_by_id(player.user_id)['gamesPlayed'])}`** **`{player.name[:14]}`**")
+            f"{config.variables['rank']} **`{player.name[:14]}`**")
     embed.add_field(name=f"{team1_captain}", value='\n'.join(team1_players))
     embed.add_field(name=f"{team2_captain}", value='\n'.join(team2_players))
 
@@ -200,18 +200,18 @@ async def new_game_started(ctx, bot, game: Game, user):
         **`Maps:`** {', '.join(maps)}
     """
     embed = discord.Embed(title="Game Started", description=body, color=success_color)
-    team1_captain = f"{config.variables['rank_red']} **`{str(member_schema.get_profile_by_id(game.team1_captain.user_id)['gamesPlayed'])}`** **`{game.team1_captain.name[:14]}`**"
-    team2_captain = f"{config.variables['rank_red']} **`{str(member_schema.get_profile_by_id(game.team2_captain.user_id)['gamesPlayed'])}`** **`{game.team2_captain.name[:14]}`**"
+    team1_captain = f"{config.variables['rank_red']} **`{game.team1_captain.name[:14]}`**"
+    team2_captain = f"{config.variables['rank_red']} **`{game.team2_captain.name[:14]}`**"
 
     team1_players = []
     team2_players = []
 
     for player in game.team1_others:
         team1_players.append(
-            f"{config.variables['rank']} **`{str(member_schema.get_profile_by_id(player.user_id)['gamesPlayed'])}`** **`{player.name[:14]}`**")
+            f"{config.variables['rank']} **`{player.name[:14]}`**")
     for player in game.team2_others:
         team2_players.append(
-            f"{config.variables['rank']} **`{str(member_schema.get_profile_by_id(player.user_id)['gamesPlayed'])}`** **`{player.name[:14]}`**")
+            f"{config.variables['rank']} **`{player.name[:14]}`**")
     embed.add_field(name=f"{team1_captain}", value='\n'.join(team1_players))
     embed.add_field(name=f"{team2_captain}", value='\n'.join(team2_players))
 
