@@ -20,7 +20,7 @@ class Queue(commands.Cog):
     async def on_ready(self):
         print("Queue Cog: Loaded")
 
-    @bot.hybrid_command(
+    @commands.hybrid_command(
         name="add",
         description="Adds you to a queue",
         options=[
