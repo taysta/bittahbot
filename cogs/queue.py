@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands import HybridCommand
 from discord_slash import cog_ext, SlashContext
@@ -21,7 +22,7 @@ class Queue(commands.Cog):
     async def on_ready(self):
         print("Queue Cog: Loaded")
 
-    @hybrid_command(
+    @commands.hybrid_command(
         name="add",
         description="Adds you to a queue",
         options=[
@@ -70,7 +71,7 @@ class Queue(commands.Cog):
         else:
             await msg.removed_from_all_queues(ctx, self.bot, queue_schema.get_all_queue_counts())
 
-    @commands.HybridCommand(
+    @commands.hybrid_command(
         name="status",
         description="Show the queue status",
         guild_ids=config.variables['guild_ids']
