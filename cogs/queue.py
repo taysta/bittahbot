@@ -20,7 +20,7 @@ class Queue(commands.Cog):
     async def on_ready(self):
         print("Queue Cog: Loaded")
 
-    @commands.hybrid_command(
+    @cog_ext.cog_slash(
         name="add",
         description="Adds you to a queue",
         options=[
@@ -44,7 +44,7 @@ class Queue(commands.Cog):
         queue_enum = QueueEnum(queue)
         await add(ctx, self.bot, queue_enum)
 
-    @commands.hybrid_command(
+    @cog_ext.cog_slash(
         name="del",
         description="Removes you from queue",
         options=[
