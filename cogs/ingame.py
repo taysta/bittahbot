@@ -5,6 +5,7 @@ from discord_slash.context import SlashContext
 from discord_slash.utils.manage_commands import create_option, create_choice
 
 import config
+import admin
 from includes import msg
 from includes.general import correct_channel
 from models.ingame_models import SwapResult, SwapError
@@ -73,6 +74,10 @@ class Ingame(commands.Cog):
     async def _finish(self, ctx: SlashContext, outcome: str):
         if not await correct_channel(ctx, ctx.author):
             return
+        if not game_service.is_captain(ctx.author):
+            if await admin.check_admin(ctx) < 2:
+                await msg.captains_only(ctx)
+                return
 
         game = game_service.finish(ctx.author, Outcome(outcome))
 
