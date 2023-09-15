@@ -75,6 +75,8 @@ class Ingame(commands.Cog):
     async def _finish(self, ctx: SlashContext, outcome: str):
         if not await correct_channel(ctx, ctx.author):
             return
+        if not ingame_schema.is_ingame(ctx.author):
+            await msg.not_ingame(ctx)
         if not game_service.is_captain(ctx.author) and await check_admin(ctx) < 2:
             await msg.captains_only(ctx)
             return
