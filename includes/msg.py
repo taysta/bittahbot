@@ -32,7 +32,7 @@ async def success(ctx, msg, hidden=False):
 
 
 async def refreshed_add(ctx, queue: str):
-    await success(ctx, f"Refreshed add to **`{queue}`**.", hidden=True)
+    await success(ctx, f"Refreshed add to **`{queue}`**.", hidden=False)
 
 
 async def already_ingame(ctx):
