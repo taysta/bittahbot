@@ -34,14 +34,14 @@ class Queue(commands.Cog):
         ],
         guild_ids=config.variables['guild_ids']
     )
-    async def _add(self, ctx: SlashContext, queue: str):
+    async def _add(self, ctx: SlashContext, queue: str = None):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
         if await check_admin(ctx) < 1 and config.variables['needs_access'] == 1:
             await msg.lacks_permission(ctx)
             return
-        if not queue:
+        if queue is None:
             queue = "quickplay"
         queue_enum = QueueEnum(queue)
         await add(ctx, self.bot, queue_enum)
