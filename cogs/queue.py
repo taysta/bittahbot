@@ -84,7 +84,7 @@ class Queue(commands.Cog):
             is_live = queue_schema.queue_is_ingame(q)
             players = []
             for player in queue_schema.get_queue_players(q):
-                players.append(f"{config.variables['rank']} **`{player['username'][:14]}`**")
+                players.append(f"`{player['username'][:14]}`**")
             embed.add_field(
                 name=f"{config.variables['live'] if is_live else ''}**{q.upper()}** **`[{queue_schema.get_queue_count(QueueEnum(q))}/10]`**",
                 value="**`OPEN`**" if len(players) < 1 else '\n'.join(players))

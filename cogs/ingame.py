@@ -111,10 +111,10 @@ class Ingame(commands.Cog):
             await msg.not_ingame(ctx)
             return
         if swap_result.error == SwapError.TARGET_NOT_IN_GAME:
-            await msg.other_not_ingame(ctx)
+            await msg.other_not_ingame(ctx, member.nick)
             return
 
-        await msg.swapped(ctx, self.bot, user.name, member.name)
+        await msg.swapped(ctx, self.bot, user.name, member.nick)
 
     @cog_ext.cog_slash(
         name="sub",
