@@ -28,7 +28,7 @@ class Queue(commands.Cog):
                 name="queue",
                 description="Choose a queue to add to",
                 option_type=3,
-                required=True,
+                required=False,
                 choices=config.queues(True)
             )
         ],
@@ -41,6 +41,8 @@ class Queue(commands.Cog):
         if await check_admin(ctx) < 1 and config.variables['needs_access'] == 1:
             await msg.lacks_permission(ctx)
             return
+        if not queue:
+            queue = "quickplay"
         queue_enum = QueueEnum(queue)
         await add(ctx, self.bot, queue_enum)
 
