@@ -66,13 +66,6 @@ def is_banned(user):
         return False
 
 
-def is_banned(member):
-    if mongo.db['Banned'].count_documents({"userId": member.id}) > 0:
-        return True
-    else:
-        return False
-
-
 def ban_player(admin, member):
     mongo.db['Banned'].insert_one(
         {"userId": member.id, "username": member.name, "issued": datetime.now(), "by": admin.name})
