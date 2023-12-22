@@ -88,11 +88,15 @@ def form_team_by_preferences(team_comb):
 def calculate_match_balance(team1, team2):
     avg_rating_team1 = sum(player.rating.mu for player in team1) / len(team1)
     avg_rating_team2 = sum(player.rating.mu for player in team2) / len(team2)
-    return abs(avg_rating_team1 - avg_rating_team2)
+    avg_uncertainty_team1 = sum(player.rating.sigma for player in team1) / len(team1)
+    avg_uncertainty_team2 = sum(player.rating.sigma for player in team2) / len(team2)
+    balance = abs(avg_rating_team1 - avg_rating_team2)
+    uncertainty_difference = abs(avg_uncertainty_team1 - avg_uncertainty_team2)
+    return balance + uncertainty_difference
 
 
-def generate_match_combinations(players: List[Player],
-                                reshuffle_count: int = 0) -> Tuple[Tuple[Player, ...], Tuple[Player, ...]]:
+def generate_match_combinations(players: List[Player], reshuffle_count: int = 0) -> (
+        Tuple)[Tuple[Player, ...], Tuple[Player, ...]]:
     players.sort(key=lambda player: player.rating.mu, reverse=True)
     all_matches = []
 
