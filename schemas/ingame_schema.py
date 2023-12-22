@@ -145,6 +145,21 @@ def set_teams_for_game(game_id, players, reshuffles):
         mongo.db['Ingame'].insert_one(data)
 
 
+def shuffle_teams(game_id):
+    game = get_game(game_id)
+    reshuffles = game["reshuffles"] + 1
+
+    players = []
+    for player in game["players"]:
+        player_profile = mongo.db['Profiles'].find_one({"userId": player['userId']})
+        player_rank = mongo.db['Ranks'].find_one({"userId": player['userId']})
+
+        players.append(Player(player_rank['userId'], player_rank['username'],
+                              Rating(player_rank['rank'], player_rank['confidence']), player_profile['position']))
+
+    set_teams_for_game(game_id, players, reshuffles)
+
+
 def update_game_status(game_id, status):
     status_query = {
         "gameId": game_id
