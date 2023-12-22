@@ -39,13 +39,13 @@ class Queue(commands.Cog):
         description="Removes you from queue",
         guild_ids=config.variables['guild_ids']
     )
-    async def _del(self, ctx: SlashContext, queue: str):
+    async def _del(self, ctx: SlashContext):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
-        queue_schema.remove_from_queue(user, queue)
+        queue_schema.remove_from_queue(user, "quickplay")
 
-        await msg.removed_from_single_queue(ctx, self.bot, queue, queue_schema.get_queue_count(QueueEnum(queue)))
+        await msg.removed_from_single_queue(ctx, self.bot, "quickplay", queue_schema.get_queue_count(QueueEnum("quickplay")))
 
     @cog_ext.cog_slash(
         name="status",
