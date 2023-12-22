@@ -1,5 +1,5 @@
 import datetime
-from itertools import combinations, permutations
+from itertools import combinations
 import random
 from typing import List, Tuple
 
@@ -63,7 +63,12 @@ def generate_teams(queue: Queue, game_id):
 
         players.append(Player(player_rank['userId'], player_rank['username'],
                               Rating(player_rank['rank'], player_rank['confidence']), player_profile['position']))
-    set_teams_for_game(game_id, players)
+
+    # Retrieve reshuffle count for the game
+    reshuffle_count = get_game(game_id)["reshuffles"]
+
+    # Generate teams with consideration for reshuffles
+    set_teams_for_game(game_id, players, reshuffle_count)
 
 
 def form_team_by_preferences(team_comb):
@@ -71,7 +76,8 @@ def form_team_by_preferences(team_comb):
     positions_filled = {'offense': 0, 'chase': 0, 'home': 0}
 
     for player in sorted(team_comb, key=lambda p: p.rating.mu, reverse=True):
-        if player.position != 'flexible' and positions_filled[player.position] < config.variables[f'num_{player.position}_needed']:
+        if (player.position != 'flexible' and positions_filled[player.position]
+                < config.variables[f'num_{player.position}_needed']):
             team.append(player)
             positions_filled[player.position] += 1
         elif player.position == 'flexible':
@@ -81,12 +87,18 @@ def form_team_by_preferences(team_comb):
 
     return team
 
+
 def calculate_match_balance(team1, team2):
     avg_rating_team1 = sum(player.rating.mu for player in team1) / len(team1)
     avg_rating_team2 = sum(player.rating.mu for player in team2) / len(team2)
     return abs(avg_rating_team1 - avg_rating_team2)
 
-def generate_match_combinations(players: List[Player], reshuffle_count: int = 0) -> Tuple[Tuple[Player, ...], Tuple[Player, ...]]:
+
+def generate_match_combinations(
+    players: List[Player],
+    reshuffle_count: int = 0
+) -> Tuple[Tuple[Player, ...], Tuple[Player, ...]]:
+
     players.sort(key=lambda player: player.rating.mu, reverse=True)
     all_matches = []
 
@@ -95,22 +107,24 @@ def generate_match_combinations(players: List[Player], reshuffle_count: int = 0)
         remaining_players = set(players) - set(team1)
         team2 = form_team_by_preferences(remaining_players)
 
-        match = (team1, team2)
+        match = (tuple(team1), tuple(team2))  # Ensure teams are tuples
         all_matches.append(match)
 
-    all_matches.sort(key=lambda match: calculate_match_balance(*match))
+    all_matches.sort(key=lambda test_match: calculate_match_balance(*test_match))
     reshuffle_count = min(reshuffle_count, len(all_matches) - 1)
     return all_matches[reshuffle_count]
 
+
 def set_teams_for_game(game_id, players, reshuffles):
-    reshuffles = get_game(game_id)["reshuffles"]
     best_match = generate_match_combinations(players, reshuffles)
 
-    mongo.db["GameData"].update_one({"gameId": game_id}, {
-        "$set": {
-            "reshuffles": reshuffles + 1
-        }
-    })
+    # Update the reshuffle count in the database only if a reshuffle has been performed
+    if reshuffles > 0:
+        mongo.db["GameData"].update_one({"gameId": game_id}, {
+            "$set": {
+                "reshuffles": reshuffles
+            }
+        })
 
     team1 = best_match[0]
     team2 = best_match[1]
