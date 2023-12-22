@@ -1,8 +1,8 @@
 import datetime
 from itertools import combinations
 import random
-from typing import List, Tuple
-
+from typing import List
+import hashlib
 import pymongo
 from discord import User
 from pymongo import ASCENDING
@@ -18,7 +18,6 @@ from models.queue_models import Queue
 NUM_OFFENSE_NEEDED = config.variables['num_offense_needed']
 NUM_CHASE_NEEDED = config.variables['num_chase_needed']
 NUM_HOME_NEEDED = config.variables['num_home_needed']
-RATING_TOLERANCE = config.variables['rating_tolerance']
 TEAM_SIZE = NUM_OFFENSE_NEEDED + NUM_CHASE_NEEDED + NUM_HOME_NEEDED
 
 
@@ -48,7 +47,7 @@ def create_game(queue: Queue, game_id, maps):
         "status": 2,
         "maps": maps,
         "started": datetime.datetime.now(),
-        "reshuffles": 0
+        "reshuffles": 0,
     }
 
     mongo.db['GameData'].insert_one(data)
@@ -95,8 +94,15 @@ def calculate_match_balance(team1, team2):
     return balance + uncertainty_difference
 
 
-def generate_match_combinations(players: List[Player], reshuffle_count: int = 0) -> (
-        Tuple)[Tuple[Player, ...], Tuple[Player, ...]]:
+def hash_team_combination(team):
+    """ Generate a hash for a team combination """
+    player_ids = sorted(player.user_id for player in team)
+    return hashlib.md5(','.join(map(str, player_ids)).encode()).hexdigest()
+
+
+def generate_match_combinations(players: List[Player], game_id, reshuffle_count: int = 0):
+    game_data = mongo.db['GameData'].find_one({"gameId": game_id})
+    previous_hashes = set(game_data.get("previous_team_hashes", []))  # Safely get previous hashes
     players.sort(key=lambda player: player.rating.mu, reverse=True)
     all_matches = []
 
@@ -105,44 +111,58 @@ def generate_match_combinations(players: List[Player], reshuffle_count: int = 0)
         remaining_players = set(players) - set(team1)
         team2 = form_team_by_preferences(remaining_players)
 
-        match = (tuple(team1), tuple(team2))
-        all_matches.append(match)
+        team1_hash = hash_team_combination(team1)
+        team2_hash = hash_team_combination(team2)
+
+        if team1_hash not in previous_hashes and team2_hash not in previous_hashes:
+            all_matches.append((team1, team2))
 
     all_matches.sort(key=lambda test_match: calculate_match_balance(*test_match))
     reshuffle_count = min(reshuffle_count, len(all_matches) - 1)
-    return all_matches[reshuffle_count]
+    return all_matches[reshuffle_count] if all_matches else None
 
 
 def set_teams_for_game(game_id, players, reshuffles):
-    best_match = generate_match_combinations(players, reshuffles)
+    best_match = generate_match_combinations(players, game_id, reshuffles)
+    if best_match:
+        team1, team2 = best_match
+        team1_hash = hash_team_combination(team1)
+        team2_hash = hash_team_combination(team2)
 
-    if reshuffles > 0:
-        mongo.db["GameData"].update_one({"gameId": game_id}, {"$set": {"reshuffles": reshuffles}})
+        # Update database with the new combinations
+        mongo.db["GameData"].update_one(
+            {"gameId": game_id},
+            {"$set": {"reshuffles": reshuffles},
+             "$push": {"previous_team_hashes": [team1_hash, team2_hash]}}
+        )
 
-    team1 = best_match[0]
-    team2 = best_match[1]
-    team1_captain = random.choice(team1)
-    team2_captain = random.choice(team2)
+        team1_captain = random.choice(team1)
+        team2_captain = random.choice(team2)
 
-    for player in team1:
-        data = {
-            "userId": player.user_id,
-            "username": player.username,
-            "team": 1,
-            "isCaptain": player.user_id == team1_captain.user_id,
-            "gameId": game_id
-        }
-        mongo.db['Ingame'].insert_one(data)
+        # Insert data for team 1
+        for player in team1:
+            data = {
+                "userId": player.user_id,
+                "username": player.username,
+                "team": 1,
+                "isCaptain": player.user_id == team1_captain.user_id,
+                "gameId": game_id
+            }
+            mongo.db['Ingame'].insert_one(data)
 
-    for player in team2:
-        data = {
-            "userId": player.user_id,
-            "username": player.username,
-            "team": 2,
-            "isCaptain": player.user_id == team2_captain.user_id,
-            "gameId": game_id
-        }
-        mongo.db['Ingame'].insert_one(data)
+        # Insert data for team 2
+        for player in team2:
+            data = {
+                "userId": player.user_id,
+                "username": player.username,
+                "team": 2,
+                "isCaptain": player.user_id == team2_captain.user_id,
+                "gameId": game_id
+            }
+            mongo.db['Ingame'].insert_one(data)
+    else:
+        # Log or handle the case when no unique combinations are available
+        print("No unique team combinations available for reshuffling.")
 
 
 def shuffle_teams(game_id):
