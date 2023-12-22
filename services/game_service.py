@@ -28,7 +28,7 @@ def swap(user: User, target: User) -> SwapResult:
     ingame_schema.swap_players(user, target, game_id)
     game = game_data_to_game_model(ingame_schema.get_game(game_id))
 
-    return SwapResult.success(game, user.name, target.name)
+    return SwapResult.success(game, user.display_name, target.display_name)
 
 
 def get_games(queue: Queue = None) -> List[Game]:

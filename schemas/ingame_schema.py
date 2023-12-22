@@ -30,7 +30,7 @@ class Player:
         self.position = position
 
     def __repr__(self):
-        return f"Player(user_id={self.user_id}, username='{self.username}')"
+        return f"Player(user_id='{self.user_id}', username='{self.username}')"
 
     def __eq__(self, other):
         if not isinstance(other, Player):
@@ -156,7 +156,7 @@ def shuffle_teams(game_id):
 
         players.append(Player(player_rank['userId'], player_rank['username'],
                               Rating(player_rank['rank'], player_rank['confidence']), player_profile['position']))
-
+    mongo.db['Ingame'].delete_many({"gameId": game_id})
     set_teams_for_game(game_id, players, reshuffles)
 
 
@@ -314,14 +314,14 @@ def swap_players(user: User, target: User, game_id):
     mongo.db["Ingame"].update_one({"_id": user_data["_id"]}, {
         "$set": {
             "userId": target.id,
-            "username": target.name
+            "username": target.display_name
         }
     })
 
     mongo.db["Ingame"].update_one({"_id": target_data["_id"]}, {
         "$set": {
             "userId": user.id,
-            "username": user.name
+            "username": user.display_name
         }
     })
 
