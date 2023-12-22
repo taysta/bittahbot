@@ -6,7 +6,7 @@ from typing import List, Tuple
 import pymongo
 from discord import User
 from pymongo import ASCENDING
-from trueskill import Rating, quality, rate
+from trueskill import Rating, rate
 
 import config
 from includes import custom_ids
@@ -30,7 +30,7 @@ class Player:
         self.position = position
 
     def __repr__(self):
-        return f"Player(user_id={self.user_id}, username={self.username}"
+        return f"Player(user_id={self.user_id}, username='{self.username}')"
 
     def __eq__(self, other):
         if not isinstance(other, Player):
@@ -64,10 +64,7 @@ def generate_teams(queue: Queue, game_id):
         players.append(Player(player_rank['userId'], player_rank['username'],
                               Rating(player_rank['rank'], player_rank['confidence']), player_profile['position']))
 
-    # Retrieve reshuffle count for the game
     reshuffle_count = get_game(game_id)["reshuffles"]
-
-    # Generate teams with consideration for reshuffles
     set_teams_for_game(game_id, players, reshuffle_count)
 
 
@@ -94,11 +91,8 @@ def calculate_match_balance(team1, team2):
     return abs(avg_rating_team1 - avg_rating_team2)
 
 
-def generate_match_combinations(
-    players: List[Player],
-    reshuffle_count: int = 0
-) -> Tuple[Tuple[Player, ...], Tuple[Player, ...]]:
-
+def generate_match_combinations(players: List[Player],
+                                reshuffle_count: int = 0) -> Tuple[Tuple[Player, ...], Tuple[Player, ...]]:
     players.sort(key=lambda player: player.rating.mu, reverse=True)
     all_matches = []
 
@@ -107,7 +101,7 @@ def generate_match_combinations(
         remaining_players = set(players) - set(team1)
         team2 = form_team_by_preferences(remaining_players)
 
-        match = (tuple(team1), tuple(team2))  # Ensure teams are tuples
+        match = (tuple(team1), tuple(team2))
         all_matches.append(match)
 
     all_matches.sort(key=lambda test_match: calculate_match_balance(*test_match))
@@ -118,18 +112,14 @@ def generate_match_combinations(
 def set_teams_for_game(game_id, players, reshuffles):
     best_match = generate_match_combinations(players, reshuffles)
 
-    # Update the reshuffle count in the database only if a reshuffle has been performed
     if reshuffles > 0:
-        mongo.db["GameData"].update_one({"gameId": game_id}, {
-            "$set": {
-                "reshuffles": reshuffles
-            }
-        })
+        mongo.db["GameData"].update_one({"gameId": game_id}, {"$set": {"reshuffles": reshuffles}})
 
     team1 = best_match[0]
     team2 = best_match[1]
     team1_captain = random.choice(team1)
     team2_captain = random.choice(team2)
+
     for player in team1:
         data = {
             "userId": player.user_id,
@@ -139,6 +129,7 @@ def set_teams_for_game(game_id, players, reshuffles):
             "gameId": game_id
         }
         mongo.db['Ingame'].insert_one(data)
+
     for player in team2:
         data = {
             "userId": player.user_id,
@@ -148,31 +139,6 @@ def set_teams_for_game(game_id, players, reshuffles):
             "gameId": game_id
         }
         mongo.db['Ingame'].insert_one(data)
-
-
-def determine_best_match(best_combinations, reshuffles):
-
-    scores = []
-
-    for i, combo in enumerate(best_combinations):
-        team_1_ratings = []
-        team_2_ratings = []
-
-        for player in combo[0]:
-            team_1_ratings.append(player.rating)
-
-        for player in combo[1]:
-            team_2_ratings.append(player.rating)
-
-        quality_score = quality([team_1_ratings, team_2_ratings])
-        scores.append({'index': i, 'quality': quality_score})
-
-    scores = sorted(scores, key=lambda s: (s['quality']), reverse=True)
-
-    q = scores[reshuffles]['quality']
-    print(f'quality score: {q}')
-
-    return best_combinations[scores[reshuffles]['index']]
 
 
 def update_game_status(game_id, status):
