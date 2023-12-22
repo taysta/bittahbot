@@ -15,7 +15,7 @@ from schemas import ingame_schema, member_schema, queue_schema, draft_schema
 from services import map_service
 
 
-def swap(user: User, target: Member) -> SwapResult:
+def swap(user: User, target: User) -> SwapResult:
     if not ingame_schema.is_ingame(user):
         return SwapResult.error(SwapError.USER_NOT_IN_GAME)
 
