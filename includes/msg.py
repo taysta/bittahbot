@@ -9,11 +9,9 @@ from discord_slash.utils.manage_components import create_button, create_actionro
 
 import config
 from includes import custom_ids, logger, emojis
-from models.draft_state import DraftState
 from models.game import Game, GameStatus, FinishedGame
 from models.leaderboards import Leaderboard
 from models.queue_models import Queue
-from schemas import member_schema
 from services import game_service, map_service
 
 success_color = 0x84ff00
@@ -355,72 +353,6 @@ async def game_finished(ctx, bot, queue: Queue, started_at: datetime, ended_at: 
                                   components=[create_actionrow(*buttons)])
 
 
-async def drafting_started(ctx, bot, game: Game, draft_state: DraftState) -> Dict[int, int]:
-    body = f"Captains: {game.get_team1_captain_name()}, {game.get_team2_captain_name()}"
-    content = f"`Started drafting for {game.queue.value} game`"
-    embed = discord.Embed(description=body, color=success_color)
-    messages = await draft_info(bot, game, draft_state)
-    await send_in_correct_channel(ctx, bot, content=content, embed=embed)
-    return messages
-
-
-async def draft_info(bot, game: Game, draft_state: DraftState) -> Dict[int, int]:
-    select = create_select(
-        options=[
-            create_select_option(player.name, value=str(player.user_id)) for player in game.unassigned_players
-        ],
-        placeholder="Draft a player",
-        min_values=draft_state.num_picks,
-        max_values=draft_state.num_picks,
-        custom_id=custom_ids.draft
-    )
-    buttons = [create_actionrow(select)]
-    messages = {}
-
-    for captain in game.team1_captain, game.team2_captain:
-        try:
-            user = await bot.fetch_user(captain.user_id)
-        except Exception as e:
-            logger.log(e)
-            logger.log("Most likely, the error is due to testing with a non-real Discord user")
-            continue
-
-        body = f"""
-            Please pick teams **fairly**.
-            
-            Available players: {', '.join([player.name for player in game.unassigned_players])}
-            
-            """
-
-        team1 = []
-        team2 = []
-        captain1 = game.get_team1_captain_name()
-        captain2 = game.get_team2_captain_name()
-        for player in game.team1_players:
-            if player.name != captain1:
-                team1.append(player.name)
-        for player in game.team2_players:
-            if player.name != captain2:
-                team2.append(player.name)
-
-        body = body + f"\n"
-        body = body + f"**`{captain1}:` {', '.join(team1)}**"
-        body = body + "\n"
-        body = body + f"**`{captain2}:` {', '.join(team2)}**"
-        body = body + "\n\n"
-
-        if draft_state.team_to_pick == captain.team:
-            body = body + f"**Your pick!** You have `{draft_state.num_picks}` pick(s) remaining this round."
-            components = buttons
-        else:
-            body = body + "**Waiting on opponent....**"
-            components = None
-        embed = discord.Embed(description=body, color=success_color)
-        message = await user.send(embed=embed, components=components)
-        messages[user.id] = message.id
-    return messages
-
-
 async def dm_game_has_started(game, captain):
     team1 = []
     team2 = []
@@ -444,65 +376,8 @@ async def dm_game_has_started(game, captain):
     await captain.send(embed=embed)
 
 
-async def show_comp_game_started(ctx, bot, game):
-    '''
-    buttons = [
-        create_actionrow(
-            create_button(
-                style=ButtonStyle.blue,
-                label="Shuffle Map 1",
-                custom_id="15521"
-            ),
-            create_button(
-                style=ButtonStyle.blue,
-                label="Shuffle Map 2",
-                custom_id="15522"
-            )
-        )
-    ]
-    '''
-    team1 = []
-    team2 = []
-    captain1 = game.get_team1_captain_name()
-    captain2 = game.get_team2_captain_name()
-    for player in game.team1_players:
-        if player.name != captain1:
-            team1.append(player.name)
-    for player in game.team2_players:
-        if player.name != captain2:
-            team2.append(player.name)
-
-    body = f"""
-        **Teams:**
-        **`{captain1}:`** {', '.join(team1)}
-        **`{captain2}:`** {', '.join(team2)}
-        
-        **`Maps:`** {', '.join(game.maps)}
-    """
-    embed = discord.Embed(description=body, color=success_color)
-
-    await send_in_correct_channel(ctx, bot, content="**`Competitive game started`**", embed=embed)
-
-
 async def captains_only(ctx):
     await ctx.send("This interaction is only available to captains.", hidden=True)
-
-
-async def gs(ctx, bot):
-    quickplay = [f"{config.variables['rank']} **210** **`-apo`**", f"{config.variables['rank']} **318** **`EGG`**",
-                 f"{config.variables['rank']} **175** **`swingapples`**",
-                 f"{config.variables['rank']} **224** **`MayorOfChicago`**"]
-    competitive = [f"{config.variables['rank']} **2** **`Krayvok`**", f"{config.variables['rank']} **47** **`Sh4z`**"]
-    newbloods = [f"{config.variables['rank']} **3** **`Player1`**", f"{config.variables['rank']} **8** **`Player2`**",
-                 f"{config.variables['rank']} **15** **`Player3`**"]
-
-    embed = discord.Embed(color=success_color)
-    embed.add_field(name="QUICKPLAY **`[4/10]`**", value='\n'.join(quickplay))
-    embed.add_field(name="COMPETITIVE **`[0/10]`**", value="**`10x FREE SLOTS`**")
-    embed.add_field(name="NEWBLOODS **`[0/10]`**", value="**`10x FREE SLOTS`**")
-    embed.add_field(name="TEST **`[0/10]`**", value="**`10x FREE SLOTS`**")
-
-    await ctx.send(embed=embed)
 
 
 async def show_leaderboard(ctx, leaderboard: Leaderboard):

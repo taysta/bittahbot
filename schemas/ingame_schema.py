@@ -351,14 +351,6 @@ def sub_player(user, member):
     mongo.db['Queue'].delete_many({"userId": user.id})
 
 
-def check_if_comp_game_by_user(user):
-    ingame = mongo.db['Ingame'].find_one({"userId": user.id})
-    if mongo.db['DraftState'].find_one({"gameId": ingame['gameId']}):
-        return True
-    else:
-        return False
-
-
 def get_game(game_id):
     return mongo.db['GameData'].find_one({"gameId": game_id})
 
@@ -400,16 +392,12 @@ def new_map(game_id, maps, button_id):
     new_maps = []  # Initialize new_maps to an empty list
 
     if game['queue'] == "quickplay":
-        mongo.db['GameData'].update_one({"gameId": game_id}, {"$set": {"maps": maps}})
-        new_maps = maps  # Assign maps to new_maps
-    else:
-        if game['queue'] == "competitive":
-            if button_id == custom_ids.shuffle_map_1:
-                # shuffle map 1
-                new_maps = [maps[0], game['maps'][1]]
-            elif button_id == custom_ids.shuffle_map_2:
-                new_maps = [game['maps'][0], maps[0]]
-            mongo.db['GameData'].update_one({"gameId": game_id}, {"$set": {"maps": new_maps}})
+        if button_id == custom_ids.shuffle_map_1:
+            # shuffle map 1
+            new_maps = [maps[0], game['maps'][1]]
+        elif button_id == custom_ids.shuffle_map_2:
+            new_maps = [game['maps'][0], maps[0]]
+        mongo.db['GameData'].update_one({"gameId": game_id}, {"$set": {"maps": new_maps}})
 
     return new_maps
 

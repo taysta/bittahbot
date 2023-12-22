@@ -69,13 +69,6 @@ def queue_is_ingame(queue):
         return False
 
 
-def comp_queue_is_ingame(queue):
-    if mongo.db['GameData'].count_documents({"queue": queue, "status": 2}) > 0:
-        return True
-    else:
-        return False
-
-
 def get_ingame_queue_game_data(queue):
     return mongo.db['GameData'].find({"queue": queue, "status": 2})
 

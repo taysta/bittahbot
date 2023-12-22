@@ -5,12 +5,7 @@ MAX_QUEUE_SIZE = 10
 
 
 class Queue(Enum):
-    # For legacy data processing
-    CASUAL = "casual"
     QUICKPLAY = "quickplay"
-    COMPETITIVE = "competitive"
-    NEWBLOODS = "newbloods"
-    TEST = "test"
 
 
 class AddStatus(Enum):

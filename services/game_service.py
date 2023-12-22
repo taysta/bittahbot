@@ -6,12 +6,11 @@ from typing import List, Tuple, Dict
 from discord import User, Member
 
 from includes.general import convert_keys_to_str
-from models.draft_state import DraftState
 from models.game import Game, GameStatus, EmptyGame, FinishedGame
 from models.ingame_models import SwapResult, SwapError, ScrambleError
 from models.profile import Outcome
 from models.queue_models import Queue, UserInGame
-from schemas import ingame_schema, member_schema, queue_schema, draft_schema
+from schemas import ingame_schema, member_schema, queue_schema
 from services import map_service
 
 
@@ -76,17 +75,6 @@ def start_game(user: User, queue: Queue) -> Game:
 
 def generate_game_id() -> str:
     return str(uuid.uuid4())
-
-
-def start_draft_game(queue: Queue) -> Tuple[Game, DraftState]:
-    game_id = generate_game_id()
-    maps = map_service.get_maps(num_maps=2)
-    draft_schema.generate_game(game_id, queue, maps)
-    return get_game_and_draft_state(game_id)
-
-
-def get_game_and_draft_state(game_id) -> Tuple[Game, DraftState]:
-    return get(game_id), draft_schema.get_draft_state(game_id)
 
 
 def shuffle_teams(game_id) -> Game:
@@ -194,33 +182,6 @@ def finish(user, outcome: Outcome) -> EmptyGame:
     return get_empty(game_id)
 
 
-def pick_player(drafting_user: User, user_ids: List[int]) -> Tuple[Game, DraftState]:
-    game_id = ingame_schema.get_game_id_from_user(drafting_user)
-    game, draft_state = get_game_and_draft_state(game_id)
-
-    captain = [captain for captain in (game.team1_captain, game.team2_captain)
-               if captain.user_id == drafting_user.id][0]
-
-    if draft_state is None:
-        raise ValueError("Drafting is already finished")
-    if captain.team != draft_state.team_to_pick:
-        raise ValueError("Wrong team to draft")
-    if len(user_ids) != draft_state.num_picks:
-        raise ValueError("Incorrect number of players to draft")
-
-    draft_schema.pick_players(game_id, captain.team, user_ids)
-    draft_schema.switch_pick_order(game_id, 2 if captain.team == 1 else 1,
-                                   len(game.unassigned_players) - draft_state.num_picks)
-
-    game, draft_state = get_game_and_draft_state(game_id)
-    if len(game.unassigned_players) == 0:
-        draft_schema.start_game(game_id)
-        draft_schema.remove_draft_state(game_id)
-        return get(game_id), draft_state
-
-    return game, draft_state
-
-
 def cancel_game(user: User) -> bool:
     # TODO: test and use in cog
     if not ingame_schema.is_ingame(user):
@@ -228,12 +189,7 @@ def cancel_game(user: User) -> bool:
 
     game_id = ingame_schema.get_game_id_from_user(user)
     ingame_schema.delete(game_id)
-    draft_schema.remove_draft_state(game_id)
     return True
-
-
-def update_draft_state_messages(game_id, messages: Dict[int, int]):
-    draft_schema.update_messages(game_id, convert_keys_to_str(messages))
 
 
 def is_captain(user):

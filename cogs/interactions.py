@@ -53,11 +53,6 @@ class Interaction(commands.Cog):
             game_id = ingame_schema.get_game_id_from_user(interacted_by)
             new_maps = ingame_schema.new_map(game_id, map_service.get_maps(num_maps=1), 1)
             await msg.show_updated_maps(ctx, new_maps, interacted_by, 1)
-        elif interaction_id == custom_ids.draft:
-            if not ingame_schema.is_ingame(interacted_by):
-                await msg.not_ingame(ctx)
-                return
-            await self.handle_draft_pick(ctx)
         elif interaction_id == custom_ids.shuffle_map_1 or interaction_id == custom_ids.shuffle_map_2:
             if not ingame_schema.is_ingame(interacted_by):
                 await msg.not_ingame(ctx)
@@ -122,29 +117,6 @@ class Interaction(commands.Cog):
             await add(ctx, self.bot, queue)
         else:
             await msg.expired(ctx)
-
-    async def handle_draft_pick(self, ctx):
-        game, draft_state = game_service.pick_player(ctx.author,
-                                                     [int(option) for option in ctx.selected_options])
-        if game.status == GameStatus.PENDING:
-            for captain in game.team1_captain, game.team2_captain:
-                captain_object = await self.bot.fetch_user(captain.user_id)
-                captain_message_id = draft_state.messages[captain.user_id]
-                message = await captain_object.fetch_message(captain_message_id)
-                await message.delete()
-            messages = await msg.draft_info(self.bot, game, draft_state)
-            game_service.update_draft_state_messages(game.game_id, messages)
-        elif game.status == GameStatus.STARTED:
-            for captain in game.team1_captain, game.team2_captain:
-                captain_object = await self.bot.fetch_user(captain.user_id)
-                captain_message_id = draft_state.messages[captain.user_id]
-                message = await captain_object.fetch_message(captain_message_id)
-                await message.delete()
-                await msg.dm_game_has_started(game, captain_object)
-            for player in game.team1_others + game.team2_others:
-                await msg.game_started_dm(self.bot, player.user_id)
-
-            await msg.show_comp_game_started(ctx, self.bot, game)
 
 
 def setup(bot):

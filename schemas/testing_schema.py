@@ -43,7 +43,6 @@ def reset_everything():
     mongo.db['Ingame'].delete_many({})
     mongo.db['PlayerData'].delete_many({})
     mongo.db['Warnings'].delete_many({})
-    mongo.db['DraftState'].delete_many({})
     mongo.db['Messages'].delete_many({})
 
 

@@ -142,8 +142,6 @@ class Ingame(commands.Cog):
             else:
                 member_schema.check_profile(user)
                 # sub player
-                if ingame_schema.check_if_comp_game_by_user(member):
-                    return await ctx.send("You can't sub players while drafting is going on", hidden=True)
                 ingame_schema.sub_player(user, member)
                 embed = discord.Embed(description=f"**{user.name}** has subbed **{member.name}**")
                 for guild in self.bot.guilds:
