@@ -41,7 +41,6 @@ variables = {
     "num_offense_needed": getenv_int("NUM_OFFENSE_NEEDED"),
     "num_chase_needed": getenv_int("NUM_CHASE_NEEDED"),
     "num_home_needed": getenv_int("NUM_HOME_NEEDED"),
-    "rating_tolerance": getenv_int("RATING_TOLERANCE"),
     "needs_access": getenv_int("QUEUE_ROLE_ACCESS"),
     "avail": ":green_square:",
     "taken": ":red_square:",
