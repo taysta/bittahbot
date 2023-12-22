@@ -13,7 +13,9 @@ with open(path, "r") as maps_file:
         maps[name] = float(weight)
 
 
-def get_maps(num_maps=2, exclude: Set[str] = set()) -> List[str]:
+def get_maps(num_maps=2, exclude=None) -> List[str]:
+    if exclude is None:
+        exclude = set()
     if num_maps + len(exclude) > len(maps):
         raise ValueError("Asking for and excluding too many maps")
 
@@ -27,7 +29,9 @@ def get_maps(num_maps=2, exclude: Set[str] = set()) -> List[str]:
     return results
 
 
-def get_map_weighted(exclude: Set[str] = []) -> str:
+def get_map_weighted(exclude=None) -> str:
+    if exclude is None:
+        exclude = []
     map_pool = list(maps.keys() - exclude)
     weights = [maps[m] for m in map_pool]
     return random.choices(map_pool, weights=weights)[0]

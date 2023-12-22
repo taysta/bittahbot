@@ -13,7 +13,9 @@ class GameStatus(Enum):
 class Game:
     def __init__(self, game_id: int, started_at, queue: Queue, team1_players: List[UserInGame],
                  team2_players: List[UserInGame], maps: List[str], ended_at, status: GameStatus,
-                 unassigned_players: List[UserInGame] = [], reshuffles: int = 0):
+                 unassigned_players=None, reshuffles: int = 0):
+        if unassigned_players is None:
+            unassigned_players = []
         self.unassigned_players = unassigned_players
         self.status = status
         self.ended_at = ended_at
