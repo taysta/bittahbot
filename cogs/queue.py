@@ -23,41 +23,20 @@ class Queue(commands.Cog):
     @cog_ext.cog_slash(
         name="add",
         description="Adds you to a queue",
-        options=[
-            create_option(
-                name="queue",
-                description="Choose a queue to add to",
-                option_type=3,
-                required=False,
-                choices=config.queues(True)
-            )
-        ],
         guild_ids=config.variables['guild_ids']
     )
-    async def _add(self, ctx: SlashContext, queue: str = None):
+    async def _add(self, ctx: SlashContext):
         user = ctx.author
         if not await general.correct_channel(ctx, user):
             return
         if await check_admin(ctx) < 1 and config.variables['needs_access'] == 1:
             await msg.lacks_permission(ctx)
             return
-        if queue is None:
-            queue = "quickplay"
-        queue_enum = QueueEnum(queue)
-        await add(ctx, self.bot, queue_enum)
+        await add(ctx, self.bot, QueueEnum("quickplay"))
 
     @cog_ext.cog_slash(
         name="del",
         description="Removes you from queue",
-        options=[
-            create_option(
-                name="queue",
-                description="Choose a queue to be removed from",
-                option_type=3,
-                required=True,
-                choices=config.queues(False)
-            )
-        ],
         guild_ids=config.variables['guild_ids']
     )
     async def _del(self, ctx: SlashContext, queue: str):
@@ -66,10 +45,7 @@ class Queue(commands.Cog):
             return
         queue_schema.remove_from_queue(user, queue)
 
-        if queue != "all":
-            await msg.removed_from_single_queue(ctx, self.bot, queue, queue_schema.get_queue_count(QueueEnum(queue)))
-        else:
-            await msg.removed_from_all_queues(ctx, self.bot, queue_schema.get_all_queue_counts())
+        await msg.removed_from_single_queue(ctx, self.bot, queue, queue_schema.get_queue_count(QueueEnum(queue)))
 
     @cog_ext.cog_slash(
         name="status",

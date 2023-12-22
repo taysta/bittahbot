@@ -106,10 +106,7 @@ class Interaction(commands.Cog):
 
                 await msg.complete_setup(ctx)
         elif interaction_id == custom_ids.re_add:
-            # It's the first word of the description, thankfully
-            embed = ctx.origin_message.embeds[0]
-            queue_name = embed.description.split()[0].lower()
-            queue = Queue(queue_name)
+            queue = Queue("quickplay")
             if not queue_service.valid_for_re_add(ctx.author):
                 await msg.expired(ctx)
                 return

@@ -27,15 +27,6 @@ class Ingame(commands.Cog):
     @cog_ext.cog_slash(
         name="games",
         description="View current games",
-        options=[
-            create_option(
-                name="queue",
-                description="Choose a queue: [optional]",
-                required=False,
-                option_type=3,
-                choices=config.queues(True)
-            )
-        ],
         guild_ids=config.variables['guild_ids']
     )
     async def _games(self, ctx: SlashContext, queue: str = None):
