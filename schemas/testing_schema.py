@@ -5,7 +5,7 @@ from trueskill import Rating
 from includes import mongo
 
 
-def add_test_players(queue, amount):
+def add_test_players(amount):
     rating = Rating()
     for x in range(amount):
         data = {
@@ -27,7 +27,7 @@ def add_test_players(queue, amount):
         data = {
             "userId": x + 1,
             "username": f"Player{x + 1}",
-            "queue": queue,
+            "queue": "quickplay",
             "added": datetime.datetime.now()
         }
         mongo.db['Queue'].insert_one(data)
