@@ -22,11 +22,12 @@ TEAM_SIZE = NUM_OFFENSE_NEEDED + NUM_CHASE_NEEDED + NUM_HOME_NEEDED
 
 
 class Player:
-    def __init__(self, user_id=0, username="", r=Rating(), position=""):
+    def __init__(self, user_id=0, username="", r=Rating(), position="", captain_status=False):
         self.rating = r
         self.username = username
         self.user_id = user_id
         self.position = position
+        self.is_captain = captain_status
 
     def __repr__(self):
         return f"Player(user_id='{self.user_id}', username='{self.username}')"
@@ -67,31 +68,43 @@ def generate_teams(queue: Queue, game_id):
     set_teams_for_game(game_id, players, reshuffle_count)
 
 
-def form_team_by_preferences(team_comb):
-    team = []
-    positions_filled = {'offense': 0, 'chase': 0, 'home': 0}
+def form_team_by_preferences(team_comb, required_positions):
+    team = {'offense': [], 'chase': [], 'home': []}
+    flexible_players = []
+    assigned_positions = {}
 
-    for player in sorted(team_comb, key=lambda p: p.rating.mu, reverse=True):
-        if (player.position != 'flexible' and positions_filled[player.position]
-                < config.variables[f'num_{player.position}_needed']):
-            team.append(player)
-            positions_filled[player.position] += 1
+    # First, assign players to their preferred positions if available
+    for player in team_comb:
+        if player.position in team and len(team[player.position]) < required_positions[player.position]:
+            team[player.position].append(player)
+            assigned_positions[player] = player.position
         elif player.position == 'flexible':
-            least_filled_position = min(positions_filled, key=positions_filled.get)
-            team.append(player)
-            positions_filled[least_filled_position] += 1
+            flexible_players.append(player)
 
-    return team
+    # Then, fill the remaining slots with flexible players
+    for position, needed in required_positions.items():
+        while len(team[position]) < needed and flexible_players:
+            player = flexible_players.pop(0)
+            team[position].append(player)
+            assigned_positions[player] = position
+
+    return team['offense'] + team['chase'] + team['home'], assigned_positions
 
 
-def calculate_match_balance(team1, team2):
+def calculate_match_balance(team1, team2, assigned_positions):
     avg_rating_team1 = sum(player.rating.mu for player in team1) / len(team1)
     avg_rating_team2 = sum(player.rating.mu for player in team2) / len(team2)
     avg_uncertainty_team1 = sum(player.rating.sigma for player in team1) / len(team1)
     avg_uncertainty_team2 = sum(player.rating.sigma for player in team2) / len(team2)
     balance = abs(avg_rating_team1 - avg_rating_team2)
     uncertainty_difference = abs(avg_uncertainty_team1 - avg_uncertainty_team2)
-    return balance + uncertainty_difference
+
+    # Calculate the position preference penalty
+    position_penalty = sum(assigned_positions[player] != player.position for player in team1 + team2)
+
+    # Adjust the weight of the position penalty to tune preference/balance ratio
+    weight = 0.1
+    return balance + uncertainty_difference + weight * position_penalty
 
 
 def hash_team_combination(team):
@@ -101,15 +114,16 @@ def hash_team_combination(team):
 
 
 def generate_match_combinations(players: List[Player], game_id, reshuffle_count: int = 0):
+    required_positions = {'offense': NUM_OFFENSE_NEEDED, 'chase': NUM_CHASE_NEEDED, 'home': NUM_HOME_NEEDED}
     game_data = mongo.db['GameData'].find_one({"gameId": game_id})
-    previous_hashes = set(game_data.get("previous_team_hashes", []))  # Safely get previous hashes
+    previous_hashes = set(game_data.get("previous_team_hashes", []))
     players.sort(key=lambda player: player.rating.mu, reverse=True)
     all_matches = []
 
     for team1_comb in combinations(players, TEAM_SIZE):
-        team1 = form_team_by_preferences(team1_comb)
-        remaining_players = set(players) - set(team1)
-        team2 = form_team_by_preferences(remaining_players)
+        team1, assigned_positions1 = form_team_by_preferences(team1_comb, required_positions)
+        remaining_players = [player for player in players if player not in team1]
+        team2, assigned_positions2 = form_team_by_preferences(remaining_players, required_positions)
 
         team1_hash = hash_team_combination(team1)
         team2_hash = hash_team_combination(team2)
@@ -117,7 +131,8 @@ def generate_match_combinations(players: List[Player], game_id, reshuffle_count:
         if team1_hash not in previous_hashes and team2_hash not in previous_hashes:
             all_matches.append((team1, team2))
 
-    all_matches.sort(key=lambda test_match: calculate_match_balance(*test_match))
+    all_matches.sort(key=lambda match: calculate_match_balance(
+        match[0], match[1], {**assigned_positions1, **assigned_positions2}))
     reshuffle_count = min(reshuffle_count, len(all_matches) - 1)
     return all_matches[reshuffle_count] if all_matches else None
 
@@ -136,8 +151,9 @@ def set_teams_for_game(game_id, players, reshuffles):
              "$push": {"previous_team_hashes": [team1_hash, team2_hash]}}
         )
 
-        team1_captain = random.choice(team1)
-        team2_captain = random.choice(team2)
+        # Assign captains
+        team1_captain = next((player for player in team1 if player.is_captain), random.choice(team1))
+        team2_captain = next((player for player in team2 if player.is_captain), random.choice(team2))
 
         # Insert data for team 1
         for player in team1:
@@ -161,7 +177,6 @@ def set_teams_for_game(game_id, players, reshuffles):
             }
             mongo.db['Ingame'].insert_one(data)
     else:
-        # Log or handle the case when no unique combinations are available
         print("No unique team combinations available for reshuffling.")
 
 
@@ -169,13 +184,21 @@ def shuffle_teams(game_id):
     game = get_game(game_id)
     reshuffles = game["reshuffles"] + 1
 
+    # Retrieve current captains
+    current_captains = get_captains(game_id)
+    captain_ids = {captain['userId'] for captain in current_captains}
+
     players = []
-    for player in game["players"]:
-        player_profile = mongo.db['Profiles'].find_one({"userId": player['userId']})
-        player_rank = mongo.db['Ranks'].find_one({"userId": player['userId']})
+    for player_data in game["players"]:
+        player_profile = mongo.db['Profiles'].find_one({"userId": player_data['userId']})
+        player_rank = mongo.db['Ranks'].find_one({"userId": player_data['userId']})
+
+        captain_status = player_data['userId'] in captain_ids
 
         players.append(Player(player_rank['userId'], player_rank['username'],
-                              Rating(player_rank['rank'], player_rank['confidence']), player_profile['position']))
+                              Rating(player_rank['rank'], player_rank['confidence']),
+                              player_profile['position'], captain_status=captain_status))
+
     mongo.db['Ingame'].delete_many({"gameId": game_id})
     set_teams_for_game(game_id, players, reshuffles)
 
