@@ -9,7 +9,6 @@ from includes import msg
 from includes.general import correct_channel
 from models import twitch
 from services import analytics_service
-from schemas import testing_schema
 
 twitch_streams = twitch.TwitchStreams(config.variables['twitch_client_id'], config.variables['twitch_client_secret'],
                                       config.variables['twitch_game_id'])
@@ -97,25 +96,6 @@ class Misc(commands.Cog):
         else:
             embed = discord.Embed(description="No streams for **Midair 2**", color=msg.accent_color)
         await ctx.send(embed=embed)
-
-    @cog_ext.cog_slash(
-        name="addplayers",
-        description="Add fake players to the queue",
-        guild_ids=config.variables['guild_ids'],
-        options=[
-            create_option(
-                name="amount",
-                description="Number of players",
-                required=True,
-                option_type=4,
-                choices=[num for num in range(1, 10)]
-            )
-        ]
-    )
-    async def _addplayers(self, ctx: SlashContext, amount=int):
-        if not await correct_channel(ctx, ctx.author):
-            return
-        testing_schema.add_test_players(amount)
 
 
 def setup(bot):
