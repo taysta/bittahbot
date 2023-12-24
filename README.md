@@ -37,13 +37,6 @@ virtualenv.
 Bittah uses environment variables for configuration in combination with `.env` files and python-dotenv. `.env` is
 excluded from source control, and the template for all variables can be found in `.env.example`.
 
-### Testing
-
-Tests are mostly integration tests and require a standing MongoDB instance; they target a separate test database instead
-of the regular application one.
-
-To run tests, first install dev dependencies with `pipenv install --dev`. Then simply run `pipenv run pytest`.
-
 ## Conventions
 
 ### Quotes
@@ -51,18 +44,3 @@ To run tests, first install dev dependencies with `pipenv install --dev`. Then s
 * For _text_, use double quotes
 * For _variables inside strings_, use single quotes
 * For _keys/symbols_, use single quotes
-
-## Misc
-
-### Getting Real Data
-
-To get real data from prod into your local db for manual testing:
-
-```
-# Open a shell into the mongo container
-docker exec -it bittah_mongo_1 bash
-# Dump prod data - fill in with your creds
-mongodump mongodb+srv://<username>:<password>@<url>/Bittah
-# Restore
-mongorestore dump
-```

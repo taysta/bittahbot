@@ -12,8 +12,6 @@ import config
 from schemas import queue_schema, general_schema
 
 COGS = [PurePath(path).stem for path in glob("./cogs/*.py")]
-if config.variables['environment'] == "PROD":
-    COGS.remove("testing")
 
 client = commands.Bot(command_prefix="=")
 slash = SlashCommand(client, sync_commands=True)
