@@ -7,8 +7,9 @@ from includes import mongo
 
 import random
 
+
 def add_test_players(amount):
-    positions = ['Offence', 'Chase', 'Home', 'Flexible']
+    positions = ['offense', 'homed', 'chase', 'flexible']
     for x in range(amount):
         rating_mu = random.uniform(0, 50)  # Random float between 0 and 50
         rating_sigma = random.uniform(0, 10)  # Random float between 0 and 10
