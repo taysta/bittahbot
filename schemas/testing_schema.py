@@ -5,25 +5,33 @@ from trueskill import Rating
 from includes import mongo
 
 
+import random
+
 def add_test_players(amount):
-    rating = Rating()
+    positions = ['Offence', 'Chase', 'Home', 'Flexible']
     for x in range(amount):
+        rating_mu = random.uniform(0, 50)  # Random float between 0 and 50
+        rating_sigma = random.uniform(0, 10)  # Random float between 0 and 10
+        position = random.choice(positions)  # Random position
+
         data = {
             "userId": x + 1,
             "username": f"Player{x + 1}",
             "gamesPlayed": 0,
-            "position": "Offence",
+            "position": position,
             "lastPlayed": "Never",
             "region": "Not Set"
         }
         mongo.db['Profiles'].insert_one(data)
+
         data = {
             "userId": x + 1,
             "username": f"Player{x + 1}",
-            "rank": rating.mu,
-            "confidence": rating.sigma
+            "rank": rating_mu,
+            "confidence": rating_sigma
         }
         mongo.db['Ranks'].insert_one(data)
+
         data = {
             "userId": x + 1,
             "username": f"Player{x + 1}",
