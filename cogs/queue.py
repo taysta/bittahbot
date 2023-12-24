@@ -1,14 +1,12 @@
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-from discord_slash.utils.manage_commands import create_option
 
 import config
 from cogs.shared.add import add
 from includes import msg, general
 from models.queue_models import Queue as QueueEnum
-from schemas import member_schema, queue_schema
-import cogs.admin
+from schemas import queue_schema
 from cogs.admin import check_admin
 
 
